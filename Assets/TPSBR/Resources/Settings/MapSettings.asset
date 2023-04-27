@@ -24,7 +24,11 @@ MonoBehaviour:
     _recommendedPlayers: 25
     _maxPlayers: 50
 <<<<<<< HEAD
+<<<<<<< HEAD
     _showInMapSelection: 0
+=======
+    _showInMapSelection: 1
+>>>>>>> parent of 2e524f9 (gy)
 =======
     _showInMapSelection: 1
 >>>>>>> parent of 2e524f9 (gy)
@@ -39,7 +43,11 @@ MonoBehaviour:
     _recommendedPlayers: 60
     _maxPlayers: 120
 <<<<<<< HEAD
+<<<<<<< HEAD
     _showInMapSelection: 0
+=======
+    _showInMapSelection: 1
+>>>>>>> parent of 2e524f9 (gy)
 =======
     _showInMapSelection: 1
 >>>>>>> parent of 2e524f9 (gy)
@@ -54,7 +62,11 @@ MonoBehaviour:
     _recommendedPlayers: 120
     _maxPlayers: 200
 <<<<<<< HEAD
+<<<<<<< HEAD
     _showInMapSelection: 0
+=======
+    _showInMapSelection: 1
+>>>>>>> parent of 2e524f9 (gy)
 =======
     _showInMapSelection: 1
 >>>>>>> parent of 2e524f9 (gy)
@@ -69,6 +81,7 @@ MonoBehaviour:
     _recommendedPlayers: 200
     _maxPlayers: 200
 <<<<<<< HEAD
+<<<<<<< HEAD
     _showInMapSelection: 0
   - _id: Map.Game
     _scenePath: TPSBR/Scenes/Game
@@ -82,10 +95,18 @@ MonoBehaviour:
     _showInMapSelection: 1
   - _id: Map.Game
     _scenePath: TPSBR/Scenes/Game
+=======
+    _showInMapSelection: 1
+  - _id: Map.Game
+    _scenePath: TPSBR/Scenes/Game
+>>>>>>> parent of 2e524f9 (gy)
     _displayName: Debug Game
     _description: Map used for development
     _image: {fileID: 21300000, guid: f3a98a44addd7bd4c920c80dcfd4eed3, type: 3}
     _recommendedPlayers: 200
     _maxPlayers: 200
     _showInMapSelection: 0
+<<<<<<< HEAD
+>>>>>>> parent of 2e524f9 (gy)
+=======
 >>>>>>> parent of 2e524f9 (gy)
