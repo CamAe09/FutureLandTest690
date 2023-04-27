@@ -6,15 +6,6 @@
       "source": "builtin",
       "dependencies": {}
     },
-    "com.unity.2d.tilemap": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.tilemap": "1.0.0",
-        "com.unity.modules.uielements": "1.0.0"
-      }
-    },
     "com.unity.ai.navigation": {
       "version": "1.1.1",
       "depth": 0,
@@ -138,8 +129,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.nuget.newtonsoft-json": {
+<<<<<<< HEAD
       "version": "3.1.0",
       "depth": 0,
+=======
+      "version": "3.0.2",
+      "depth": 1,
+>>>>>>> parent of e2bfe8d (ggg)
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
