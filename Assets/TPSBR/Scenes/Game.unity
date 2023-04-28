@@ -186,7 +186,7 @@ PrefabInstance:
     - target: {fileID: 6612427242272952745, guid: 1432674e7fc1fa646ad8b14ba927a797, type: 3}
       propertyPath: _shrinkingArea
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 759747770}
     - target: {fileID: 6612427242272952745, guid: 1432674e7fc1fa646ad8b14ba927a797, type: 3}
       propertyPath: _levelGenerator
       value: 
@@ -2224,6 +2224,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &759747770 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7459250811850048598, guid: c91e068e99c0df240b4477d2d2f9e96b, type: 3}
+  m_PrefabInstance: {fileID: 371380932}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4522ce365901f7241b00a8b30b8f2331, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &791641249
 PrefabInstance:
   m_ObjectHideFlags: 0
