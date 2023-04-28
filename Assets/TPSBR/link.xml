@@ -1,6 +1,0 @@
-<linker>
-  <assembly fullname="Fusion.Runtime">
-    <type fullname="Fusion.OrderBeforeAttribute" preserve="all"/>
-    <type fullname="Fusion.OrderAfterAttribute" preserve="all"/>
-  </assembly>
-</linker>
