@@ -15,6 +15,7 @@ MonoBehaviour:
   _maps:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   - _id: Map.GenArea2
     _scenePath: TPSBR/Scenes/GenArea2
     _displayName: GenArea 2
@@ -119,6 +120,10 @@ MonoBehaviour:
   - _id: Map.Game
     _scenePath: TPSBR/Scenes/Game
 >>>>>>> parent of e2bfe8d (ggg)
+=======
+  - _id: Map.Game
+    _scenePath: TPSBR/Scenes/Game
+>>>>>>> parent of e2bfe8d (ggg)
     _displayName: The Main Island
     _description: Map used for FutureLand
     _image: {fileID: 21300000, guid: c85280eb7aec8084c86fc2c611badbf0, type: 3}
@@ -126,6 +131,9 @@ MonoBehaviour:
     _maxPlayers: 100
     _showInMapSelection: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of e2bfe8d (ggg)
+=======
 >>>>>>> parent of e2bfe8d (ggg)
 =======
 >>>>>>> parent of e2bfe8d (ggg)
