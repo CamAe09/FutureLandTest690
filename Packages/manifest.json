@@ -15,14 +15,11 @@
     "com.unity.nuget.mono-cecil": "1.11.4",
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
     "com.unity.nuget.newtonsoft-json": "3.1.0",
     "com.unity.probuilder": "5.0.6",
     "com.unity.render-pipelines.core": "15.0.5",
     "com.unity.render-pipelines.universal": "15.0.5",
 =======
-=======
->>>>>>> parent of e2bfe8d (ggg)
 =======
 >>>>>>> parent of e2bfe8d (ggg)
     "com.unity.probuilder": "5.0.4",

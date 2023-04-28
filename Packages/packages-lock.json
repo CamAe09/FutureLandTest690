@@ -131,14 +131,11 @@
     "com.unity.nuget.newtonsoft-json": {
 <<<<<<< HEAD
 <<<<<<< HEAD
-<<<<<<< HEAD
       "version": "3.1.0",
       "depth": 0,
 =======
       "version": "3.0.2",
 =======
-=======
->>>>>>> parent of e2bfe8d (ggg)
       "version": "3.0.2",
       "depth": 1,
       "source": "registry",
