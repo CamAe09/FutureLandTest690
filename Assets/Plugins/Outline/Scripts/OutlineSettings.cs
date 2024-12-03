@@ -28,8 +28,6 @@
 		[SerializeField]
 		private Color _color = Color.white;
 		[SerializeField]
-		private RenderPassEvent _pass = RenderPassEvent.AfterRenderingTransparents;
-		[SerializeField]
 		private EOutlineUpdateMode _updateMode = EOutlineUpdateMode.None;
 
 		public float              Width      { get { return _settings != null ? _settings.Width     : _width;     } set { _width     = Mathf.Clamp(value, MinWidth, MaxWidth);         } }
