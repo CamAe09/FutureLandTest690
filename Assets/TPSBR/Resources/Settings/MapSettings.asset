@@ -15,8 +15,12 @@ MonoBehaviour:
   _maps:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 <<<<<<< HEAD
 >>>>>>> parent of 6b6e8f8 (g)
   - _id: Map.GenArea2
@@ -129,6 +133,9 @@ MonoBehaviour:
   - _id: Map.Game
     _scenePath: TPSBR/Scenes/Game
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
     _displayName: The Main Island
     _description: Map used for FutureLand
@@ -137,9 +144,15 @@ MonoBehaviour:
     _maxPlayers: 100
     _showInMapSelection: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> parent of e2bfe8d (ggg)
+=======
+>>>>>>> parent of 6b6e8f8 (g)
 >>>>>>> parent of e2bfe8d (ggg)
 =======
 >>>>>>> parent of e2bfe8d (ggg)

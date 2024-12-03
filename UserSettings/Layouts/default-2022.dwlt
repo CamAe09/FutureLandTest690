@@ -15,12 +15,15 @@ MonoBehaviour:
   m_PixelRect:
     serializedVersion: 2
 <<<<<<< HEAD
+<<<<<<< HEAD
     x: 0
     y: 42.666668
     width: 1280
     height: 637.3334
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     x: 2249
     y: 302.5
     width: 1206
@@ -82,6 +85,9 @@ MonoBehaviour:
   m_UseBottomView: 1
   m_BottomViewHeight: 20
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
 --- !u!114 &3
 MonoBehaviour:
@@ -101,10 +107,13 @@ MonoBehaviour:
     x: 978.6667
     y: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
     width: 301.3333
     height: 587.3333
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     width: 285
     height: 665
 >>>>>>> parent of 6b6e8f8 (g)
@@ -239,16 +248,22 @@ MonoBehaviour:
     x: 0
     y: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
     width: 242
     height: 346
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     width: 228
     height: 394
 =======
     width: 450
     height: 556
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
   m_MinSize: {x: 201, y: 221}
   m_MaxSize: {x: 4001, y: 4021}
@@ -306,11 +321,14 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
     y: 346
     width: 978.6667
     height: 241.33331
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     y: 394
     width: 921
     height: 271
@@ -319,6 +337,9 @@ MonoBehaviour:
     width: 1820
     height: 383
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
   m_MinSize: {x: 231, y: 271}
   m_MaxSize: {x: 10001, y: 10021}
@@ -467,9 +488,12 @@ MonoBehaviour:
   m_Position:
     serializedVersion: 2
 <<<<<<< HEAD
+<<<<<<< HEAD
     x: 242
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     x: 228
 >>>>>>> parent of 6b6e8f8 (g)
     y: 0
@@ -728,6 +752,9 @@ MonoBehaviour:
     y: 73
     width: 449
     height: 535
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -735,6 +762,10 @@ MonoBehaviour:
     m_SupportedDataModes: 
     isAutomatic: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of e2bfe8d (ggg)
+>>>>>>> parent of 6b6e8f8 (g)
 =======
 >>>>>>> parent of e2bfe8d (ggg)
 >>>>>>> parent of 6b6e8f8 (g)
@@ -747,11 +778,14 @@ MonoBehaviour:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
       m_SelectedIDs: ba080000280600002a060000020a00002c060000220a00002e060000120800003006000032060000
       m_LastClickedID: 0
       m_ExpandedIDs: 0cfbffff
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
       m_SelectedIDs:
       m_LastClickedID: 0
       m_ExpandedIDs: 42fbffff
@@ -760,6 +794,9 @@ MonoBehaviour:
       m_LastClickedID: 0
       m_ExpandedIDs: 7c80ffffecb5fffffcfaffff
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
       m_RenameOverlay:
         m_UserAcceptedRename: 0
@@ -837,6 +874,9 @@ MonoBehaviour:
     m_SupportedDataModes: 
     isAutomatic: 1
   m_ViewDataDictionary: {fileID: 0}
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
   m_OverlayCanvas:
     m_LastAppliedPresetName: Default
@@ -847,7 +887,11 @@ MonoBehaviour:
       collapsed: 0
       displayed: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
       snapOffset: {x: -172, y: -26.666656}
+=======
+      snapOffset: {x: -166, y: -26}
+>>>>>>> parent of 6b6e8f8 (g)
 =======
       snapOffset: {x: -166, y: -26}
 >>>>>>> parent of 6b6e8f8 (g)
@@ -903,7 +947,11 @@ MonoBehaviour:
       collapsed: 0
       displayed: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
       snapOffset: {x: 0, y: 24.666666}
+=======
+      snapOffset: {x: 0, y: 0}
+>>>>>>> parent of 6b6e8f8 (g)
 =======
       snapOffset: {x: 0, y: 0}
 >>>>>>> parent of 6b6e8f8 (g)
@@ -976,7 +1024,11 @@ MonoBehaviour:
       snapCorner: 0
       id: Scene View/Cloth Constraints
 <<<<<<< HEAD
+<<<<<<< HEAD
       index: 1
+=======
+      index: 2
+>>>>>>> parent of 6b6e8f8 (g)
 =======
       index: 2
 >>>>>>> parent of 6b6e8f8 (g)
@@ -993,7 +1045,11 @@ MonoBehaviour:
       snapCorner: 0
       id: Scene View/Cloth Collisions
 <<<<<<< HEAD
+<<<<<<< HEAD
       index: 2
+=======
+      index: 3
+>>>>>>> parent of 6b6e8f8 (g)
 =======
       index: 3
 >>>>>>> parent of 6b6e8f8 (g)
@@ -1049,6 +1105,7 @@ MonoBehaviour:
       snapCorner: 0
       id: Scene View/Occlusion Culling
 <<<<<<< HEAD
+<<<<<<< HEAD
       index: 3
       layout: 4
       size: {x: 0, y: 0}
@@ -1064,6 +1121,8 @@ MonoBehaviour:
       id: Scene View/Physics Debugger
 =======
 >>>>>>> parent of 6b6e8f8 (g)
+=======
+>>>>>>> parent of 6b6e8f8 (g)
       index: 4
       layout: 4
       size: {x: 0, y: 0}
@@ -1077,7 +1136,11 @@ MonoBehaviour:
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
       id: Scene View/Scene Visibility
+=======
+      id: Scene View/Physics Debugger
+>>>>>>> parent of 6b6e8f8 (g)
 =======
       id: Scene View/Physics Debugger
 >>>>>>> parent of 6b6e8f8 (g)
@@ -1094,7 +1157,11 @@ MonoBehaviour:
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
       id: Scene View/Particles
+=======
+      id: Scene View/Scene Visibility
+>>>>>>> parent of 6b6e8f8 (g)
 =======
       id: Scene View/Scene Visibility
 >>>>>>> parent of 6b6e8f8 (g)
@@ -1111,7 +1178,10 @@ MonoBehaviour:
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 6b6e8f8 (g)
       id: Scene View/Particles
       index: 7
       layout: 4
@@ -1125,6 +1195,9 @@ MonoBehaviour:
       snapOffset: {x: 0, y: 0}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
       id: Scene View/Tilemap
       index: 11
@@ -1154,12 +1227,15 @@ MonoBehaviour:
       snapCorner: 0
       id: Scene View/TrailRenderer
 <<<<<<< HEAD
+<<<<<<< HEAD
       index: 7
       layout: 4
       size: {x: 0, y: 0}
       sizeOverriden: 0
     m_OverlaysVisible: 1
 =======
+=======
+>>>>>>> parent of 6b6e8f8 (g)
       index: 8
       layout: 4
       size: {x: 0, y: 0}
@@ -1204,6 +1280,9 @@ MonoBehaviour:
       size: {x: 0, y: 0}
       sizeOverriden: 0
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
   m_WindowGUID: cc27987af1a868c49b0894db9c0f5429
   m_Gizmos: 1
@@ -1216,11 +1295,14 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_Position:
 <<<<<<< HEAD
+<<<<<<< HEAD
     m_Target: {x: 525.7275, y: 32.873154, z: 599.78754}
     speed: 2
     m_Value: {x: 525.7275, y: 32.873154, z: 599.78754}
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     m_Target: {x: 0, y: 0, z: 0}
     speed: 2
     m_Value: {x: 0, y: 0, z: 0}
@@ -1229,6 +1311,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: -316839.78, y: -2362180.5, z: -1043331.4}
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
   m_RenderMode: 0
   m_CameraMode:
@@ -1276,9 +1361,12 @@ MonoBehaviour:
     m_gridOpacity: 0.5
   m_Rotation:
 <<<<<<< HEAD
+<<<<<<< HEAD
     m_Target: {x: -0.32356283, y: 0.16453159, z: -0.057235196, w: -0.9300217}
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     m_Target: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
 >>>>>>> parent of 6b6e8f8 (g)
     speed: 2
@@ -1302,16 +1390,22 @@ MonoBehaviour:
     m_Value: 0
   m_CameraSettings:
 <<<<<<< HEAD
+<<<<<<< HEAD
     m_Speed: 2
     m_SpeedNormalized: 1
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> parent of 6b6e8f8 (g)
     m_Speed: 1
     m_SpeedNormalized: 0.5
 =======
     m_Speed: 1.0005
     m_SpeedNormalized: 0.49999997
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
     m_SpeedMin: 0.001
     m_SpeedMax: 2
@@ -1809,4 +1903,7 @@ MonoBehaviour:
     m_IsLocked: 0
   m_PreviewWindow: {fileID: 0}
 >>>>>>> parent of e2bfe8d (ggg)
+<<<<<<< HEAD
+>>>>>>> parent of 6b6e8f8 (g)
+=======
 >>>>>>> parent of 6b6e8f8 (g)
