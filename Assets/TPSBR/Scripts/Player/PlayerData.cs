@@ -7,10 +7,10 @@ namespace TPSBR
 {
 	public interface IPlayer
 	{
-		string           UserID          { get; }
-		string           Nickname        { get; }
-		NetworkPrefabId  AgentPrefabID   { get; }
-		string			 UnityID         { get; }
+		string           UserID      { get; }
+		string           Nickname    { get; }
+		NetworkPrefabRef AgentPrefab { get; }
+		string			 UnityID     { get; }
 	}
 
 	public class PlayerData : IPlayer
@@ -19,7 +19,7 @@ namespace TPSBR
 
 		public string           UserID          => _userID;
 		public string           UnityID         { get => _unityID; set => _unityID = value; }
-		public NetworkPrefabId  AgentPrefabID   => GetAgentPrefabID();
+		public NetworkPrefabRef AgentPrefab     => GetAgentPrefab();
 		public string           Nickname        { get { return _nickname; } set { _nickname = value; IsDirty = true; } }
 		public string           AgentID         { get { return _agentID; } set { _agentID = value; IsDirty = true; } }
 
@@ -91,13 +91,13 @@ namespace TPSBR
 
 		// PRIVATE METHODS
 
-		private NetworkPrefabId GetAgentPrefabID()
+		private NetworkPrefabRef GetAgentPrefab()
 		{
 			if (_agentID.HasValue() == false)
 				return default;
 
 			var setup = Global.Settings.Agent.GetAgentSetup(_agentID);
-			return setup != null ? setup.AgentPrefabId : default;
+			return setup != null ? setup.AgentPrefab : default;
 		}
 	}
 }

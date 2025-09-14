@@ -21,7 +21,7 @@ namespace TPSBR.UI
 
 			if (_playerIcon != null)
 			{
-				var agentSetup = context.Settings.Agent.GetAgentSetup(player.AgentPrefabID);
+				var agentSetup = context.Settings.Agent.GetAgentSetup(player.AgentPrefab);
 				Sprite sprite = agentSetup != null ? agentSetup.Icon : null;
 
 				_playerIcon.sprite = sprite;

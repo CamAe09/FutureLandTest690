@@ -21,20 +21,23 @@ namespace TPSBR
 		public Action<string> LobbyJoinFailed;
 		public Action         LobbyLeft;
 
+		public event Action<NetworkRunner, NetworkObject, PlayerRef>                         ObjectExitAOI;
+		public event Action<NetworkRunner, NetworkObject, PlayerRef>                         ObjectEnterAOI;
 		public event Action<NetworkRunner, PlayerRef>                                        PlayerJoined;
 		public event Action<NetworkRunner, PlayerRef>                                        PlayerLeft;
 		public event Action<NetworkRunner, Fusion.NetworkInput>                              Input;
 		public event Action<NetworkRunner, PlayerRef, Fusion.NetworkInput>                   InputMissing;
 		public event Action<NetworkRunner, ShutdownReason>                                   Shutdown;
 		public event Action<NetworkRunner>                                                   ConnectedToServer;
-		public event Action<NetworkRunner>                                                   DisconnectedFromServer;
+		public event Action<NetworkRunner, NetDisconnectReason>                              DisconnectedFromServer;
 		public event Action<NetworkRunner, NetworkRunnerCallbackArgs.ConnectRequest, byte[]> ConnectRequest;
 		public event Action<NetworkRunner, NetAddress, NetConnectFailedReason>               ConnectFailed;
 		public event Action<NetworkRunner, SimulationMessagePtr>                             UserSimulationMessage;
 		public event Action<NetworkRunner, List<SessionInfo>>                                SessionListUpdated;
 		public event Action<NetworkRunner, Dictionary<string, object>>                       CustomAuthenticationResponse;
 		public event Action<NetworkRunner, HostMigrationToken>                               HostMigration;
-		public event Action<NetworkRunner, PlayerRef, ArraySegment<byte>>                    ReliableDataReceived;
+		public event Action<NetworkRunner, PlayerRef, ReliableKey, ArraySegment<byte>>       ReliableDataReceived;
+		public event Action<NetworkRunner, PlayerRef, ReliableKey, float>                    ReliableDataProgress;
 		public event Action<NetworkRunner>                                                   SceneLoadDone;
 		public event Action<NetworkRunner>                                                   SceneLoadStart;
 
@@ -98,7 +101,7 @@ namespace TPSBR
 			await LeaveLobby();
 
 			_currentRegion = Context.RuntimeSettings.Region;
-			PhotonAppSettings.Instance.AppSettings.FixedRegion = _currentRegion;
+			PhotonAppSettings.Global.AppSettings.FixedRegion = _currentRegion;
 
 			var joinTask = _lobbyRunner.JoinSessionLobby(SessionLobby.Custom, _lobbyName);
 			await joinTask;
@@ -158,7 +161,7 @@ namespace TPSBR
 		{
 			base.OnActivate();
 
-			PhotonAppSettings.Instance.AppSettings.FixedRegion = Context.RuntimeSettings.Region;
+			PhotonAppSettings.Global.AppSettings.FixedRegion = Context.RuntimeSettings.Region;
 		}
 
 		protected override void OnTick()
@@ -173,6 +176,16 @@ namespace TPSBR
 		}
 
 		// INetworkRunnerCallbacks INTERFACE
+
+		void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+		{
+			ObjectExitAOI?.Invoke(runner, obj, player);
+		}
+
+		void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
+		{
+			ObjectEnterAOI?.Invoke(runner, obj, player);
+		}
 
 		void INetworkRunnerCallbacks.OnPlayerJoined(NetworkRunner runner, PlayerRef player)
 		{
@@ -204,9 +217,9 @@ namespace TPSBR
 			ConnectedToServer?.Invoke(runner);
 		}
 
-		void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner)
+		void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
 		{
-			DisconnectedFromServer.Invoke(runner);
+			DisconnectedFromServer.Invoke(runner, reason);
 		}
 
 		void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
@@ -239,9 +252,14 @@ namespace TPSBR
 			HostMigration?.Invoke(runner, hostMigrationToken);
 		}
 
-		void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
+		void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
 		{
-			ReliableDataReceived?.Invoke(runner, player, data);
+			ReliableDataReceived?.Invoke(runner, player, key, data);
+		}
+
+		void INetworkRunnerCallbacks.OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+		{
+			ReliableDataProgress?.Invoke(runner, player, key, progress);
 		}
 
 		void INetworkRunnerCallbacks.OnSceneLoadDone(NetworkRunner runner)

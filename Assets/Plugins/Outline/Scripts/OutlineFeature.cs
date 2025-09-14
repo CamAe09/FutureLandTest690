@@ -36,6 +36,7 @@
 			_isInitialized = true;
 		}
 
+		public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
 		{
 			if (_isInitialized == false)
 				return;
@@ -50,6 +51,8 @@
 				}
 			}
 		}
+
+		public static bool HasObject(GameObject gameObject, IOutlineSettings settings)
 		{
 			if (_isInitialized == false)
 				return false;
@@ -66,6 +69,7 @@
 			return false;
 		}
 
+		public static bool RegisterObject(GameObject gameObject, IOutlineSettings settings)
 		{
 			if (_isInitialized == false)
 				return false;
@@ -112,6 +116,7 @@
 			return false;
 		}
 
+		public static bool RegisterObject(GameObject gameObject, Renderer renderer, IOutlineSettings settings)
 		{
 			if (_isInitialized == false)
 				return false;
@@ -140,6 +145,7 @@
 			return false;
 		}
 
+		public static bool RegisterObject(GameObject gameObject, List<Renderer> renderers, IOutlineSettings settings)
 		{
 			if (_isInitialized == false)
 				return false;
@@ -162,6 +168,8 @@
 
 			return false;
 		}
+
+		public static void UnregisterObject(GameObject gameObject)
 		{
 			if (_isInitialized == false)
 				return;
@@ -173,4 +181,5 @@
 				_outlinePasses[i].UnregisterObject(gameObject);
 			}
 		}
-
+	}
+}

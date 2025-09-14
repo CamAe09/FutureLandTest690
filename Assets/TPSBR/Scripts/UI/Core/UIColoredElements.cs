@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RTS.UI
+namespace TPSBR.UI
 {
 	[System.Serializable]
 	class UIColoredElements

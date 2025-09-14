@@ -25,12 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2232616989824137570}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4282864746978964263}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8512152418355915017
 MeshFilter:
@@ -87,6 +88,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1161953712026037327, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
@@ -138,6 +140,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5718543483793873862, guid: 5b8c12d6d8e270342aa4120f49060c7a, type: 3}
     - target: {fileID: 6727132063299379605, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
+      propertyPath: SortKey
+      value: 1472304780
+      objectReference: {fileID: 0}
+    - target: {fileID: 6727132063299379605, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
       value: 8430137235229266119
       objectReference: {fileID: 0}
@@ -150,6 +156,12 @@ PrefabInstance:
       value: ExplosiveGrenadePickup
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2089961200163242580, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1573407973551653719}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
 --- !u!4 &4282864746978964263 stripped
 Transform:

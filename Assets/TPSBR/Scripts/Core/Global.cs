@@ -78,7 +78,7 @@ namespace TPSBR
 
 			if (ApplicationSettings.IsBatchServer == true)
 			{
-				Application.targetFrameRate = NetworkProjectConfig.Global.Simulation.TickRate;
+				Application.targetFrameRate = TickRate.Resolve(NetworkProjectConfig.Global.Simulation.TickRateSelection).Server;
 			}
 
 			if (ApplicationSettings.HasFrameRate == true)

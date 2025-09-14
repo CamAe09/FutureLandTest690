@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Runtime.CompilerServices;
 	using UnityEngine;
@@ -11,6 +11,17 @@ namespace Fusion.KCC
 		public static Vector3 X0Y(this Vector2 vector)
 		{
 			return new Vector3(vector.x, 0.0f, vector.y);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 ClampToNormalized(this Vector2 vector)
+		{
+			if (Vector2.SqrMagnitude(vector) > 1.0f)
+			{
+				vector.Normalize();
+			}
+
+			return vector;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

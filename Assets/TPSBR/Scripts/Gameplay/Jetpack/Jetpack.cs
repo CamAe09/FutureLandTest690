@@ -3,14 +3,20 @@ using Fusion;
 
 namespace TPSBR
 {
-	[OrderAfter(typeof(LateAgentController))]
+	[DefaultExecutionOrder(6000)]
 	public sealed class Jetpack : ContextBehaviour
 	{
+		// CONSTANTS
+
+		private const int BIT_IS_ACTIVE   = 0;
+		private const int BIT_FULL_THRUST = 1;
+		private const int BIT_HAS_STARTED = 2;
+
 		// PUBLIC MEMBERS
 
-		public bool IsActive   { get { return _state.IsBitSet(0); } set { byte state = _state; state.SetBit(0, value); _state = state; } }
-		public bool FullThrust { get { return _state.IsBitSet(1); } set { byte state = _state; state.SetBit(1, value); _state = state; } }
-		public bool HasStarted { get { return _state.IsBitSet(2); } set { byte state = _state; state.SetBit(2, value); _state = state; } }
+		public bool IsActive   { get { return _state.IsBitSet(BIT_IS_ACTIVE);   } set { byte state = _state; state.SetBit(BIT_IS_ACTIVE,   value); _state = state; } }
+		public bool FullThrust { get { return _state.IsBitSet(BIT_FULL_THRUST); } set { byte state = _state; state.SetBit(BIT_FULL_THRUST, value); _state = state; } }
+		public bool HasStarted { get { return _state.IsBitSet(BIT_HAS_STARTED); } set { byte state = _state; state.SetBit(BIT_HAS_STARTED, value); _state = state; } }
 
 		public bool  IsRunning => IsActive == true && _fuel > 0f;
 		public float Fuel      => _fuel;
@@ -75,13 +81,14 @@ namespace TPSBR
 		[SerializeField]
 		private float _fullThrustVolume = 1f;
 
-		[Networked(OnChanged = nameof(OnStateChanged), OnChangedTargets = OnChangedTargets.All), HideInInspector]
+		[Networked, HideInInspector]
 		private byte _state { get; set; }
 
 		[Networked]
 		private float _fuel { get; set; }
 
 		private Agent _agent;
+		private byte  _localState;
 
 		private float _mountAngle;
 		private float _propellerSpeed;
@@ -97,19 +104,19 @@ namespace TPSBR
 
 		public void OnSpawned(Agent agent)
 		{
-			_agent = agent;
+			_agent      = agent;
+			_localState = default;
 
 			_jetpackObject.SetActive(false);
 
 			AddFuel(_initialFuel);
+
+			UpdateLocalState();
 		}
 
 		public void OnFixedUpdate()
 		{
 			if (IsActive == false)
-				return;
-
-			if (Object.IsProxy == true)
 				return;
 
 			if (_agent.Health.IsAlive == false)
@@ -130,6 +137,8 @@ namespace TPSBR
 			}
 
 			HasStarted |= _agent.Character.CharacterController.Data.IsGrounded == false;
+
+			UpdateLocalState();
 
 			// Ensure no weapon can be held
 			_agent.Weapons.DisarmCurrentWeapon();
@@ -169,6 +178,8 @@ namespace TPSBR
 
 			IsActive = true;
 
+			UpdateLocalState();
+
 			return true;
 		}
 
@@ -180,11 +191,15 @@ namespace TPSBR
 			IsActive = false;
 			FullThrust = false;
 			HasStarted = false;
+
+			UpdateLocalState();
 		}
 
 		public override void Render()
 		{
-			float moveDirectionY = _agent.IsLocal == true ? _agent.AgentInput.CachedInput.MoveDirection.y : default;
+			UpdateLocalState();
+
+			float moveDirectionY = _agent.HasInputAuthority == true ? _agent.AgentInput.AccumulatedInput.MoveDirection.y : default;
 
 			float targetMountAngle = MathUtility.Map(-1, 1, _mountBackwardAngle, _mountForwardAngle, moveDirectionY);
 			_mountAngle = Mathf.Lerp(_mountAngle, targetMountAngle, Time.deltaTime * _mountChangeSpeed);
@@ -236,7 +251,7 @@ namespace TPSBR
 			_jetpackAnimation.PlayForward();
 			_engineSound.Play();
 
-			if (Object.HasInputAuthority == true)
+			if (HasInputAuthority == true)
 			{
 				var shake = Context.Camera.ShakeEffect;
 
@@ -250,7 +265,7 @@ namespace TPSBR
 			_jetpackAnimation.Play(_jetpackAnimation.clip.name, -3f);
 			_engineSound.Stop();
 
-			if (Object.HasInputAuthority == true)
+			if (HasInputAuthority == true)
 			{
 				var shake = Context.Camera.ShakeEffect;
 
@@ -261,23 +276,23 @@ namespace TPSBR
 
 		// NETWORK CALLBACKS
 
-		public static void OnStateChanged(Changed<Jetpack> changed)
+		private void UpdateLocalState()
 		{
-			bool isActive = changed.Behaviour.IsActive;
+			bool stateIsActive      = _state.IsBitSet(BIT_IS_ACTIVE);
+			bool localStateIsActive = _localState.IsBitSet(BIT_IS_ACTIVE);
 
-			changed.LoadOld();
+			_localState = _state;
 
-			bool wasActive = changed.Behaviour.IsActive;
-
-			if (isActive == true && wasActive == false)
+			if (stateIsActive != localStateIsActive)
 			{
-				changed.LoadNew();
-				changed.Behaviour.Activate_Internal();
-			}
-			else if (isActive == false && wasActive == true)
-			{
-				changed.LoadNew();
-				changed.Behaviour.Deactivate_Internal();
+				if (stateIsActive == true)
+				{
+					Activate_Internal();
+				}
+				else
+				{
+					Deactivate_Internal();
+				}
 			}
 		}
 	}

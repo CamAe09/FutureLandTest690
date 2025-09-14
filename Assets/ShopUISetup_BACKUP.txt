@@ -1,0 +1,3 @@
+This file contains the backup of the original ShopUISetup.cs that had build compilation errors.
+The original file contained Unity Editor-specific code that prevented building.
+Use ShopUISetup_NEW.cs for build-compatible shop setup functionality.

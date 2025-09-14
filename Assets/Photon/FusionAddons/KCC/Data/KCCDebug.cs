@@ -1,6 +1,6 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
-	using System.Collections.Generic;
+	using System;
 	using System.Text;
 	using UnityEngine;
 
@@ -11,27 +11,30 @@ namespace Fusion.KCC
 	{
 		// PUBLIC MEMBERS
 
-		public EKCCStage TraceStage;
-		public bool      UseFixedData;
-		public bool      EnableLogs;
-		public bool      ShowPath;
-		public bool      ShowGrounding;
-		public bool      ShowSteppingUp;
-		public bool      ShowGroundSnapping;
-		public bool      ShowGroundNormal;
-		public bool      ShowGroundTangent;
-		public bool      ShowKinematicTangent;
-		public float     DisplayTime = 10.0f;
-
-		public readonly List<IKCCProcessor> ProcessorsStack = new List<IKCCProcessor>();
+		public float          LogsTime;
+		public bool           ShowPath;
+		public bool           ShowSpeed;
+		public bool           ShowGrounding;
+		public bool           ShowSteppingUp;
+		public bool           ShowGroundSnapping;
+		public bool           ShowGroundNormal;
+		public bool           ShowGroundTangent;
+		public bool           ShowMoveDirection;
+		public bool           TraceExecution;
+		public int            TraceInfoCount;
+		public KCCTraceInfo[] TraceInfos = new KCCTraceInfo[0];
+		public float          DisplayTime = 30.0f;
+		public float          SpeedScale  = 0.1f;
+		public float          PointSize   = 0.01f;
 
 		public static readonly Color FixedPathColor            = Color.red;
 		public static readonly Color RenderPathColor           = Color.green;
 		public static readonly Color FixedToRenderPathColor    = Color.blue;
-		public static readonly Color PredictionCorrectionColor = Color.magenta;
-		public static readonly Color PredictionErrorColor      = Color.yellow;
+		public static readonly Color PredictionCorrectionColor = Color.yellow;
+		public static readonly Color PredictionErrorColor      = Color.magenta;
 		public static readonly Color IsGroundedColor           = Color.green;
 		public static readonly Color WasGroundedColor          = Color.red;
+		public static readonly Color SpeedColor                = Color.green;
 		public static readonly Color IsSteppingUpColor         = Color.green;
 		public static readonly Color WasSteppingUpColor        = Color.red;
 		public static readonly Color GroundNormalColor         = Color.magenta;
@@ -39,7 +42,7 @@ namespace Fusion.KCC
 		public static readonly Color GroundSnapingColor        = Color.cyan;
 		public static readonly Color GroundSnapTargetColor     = Color.blue;
 		public static readonly Color GroundSnapPositionColor   = Color.red;
-		public static readonly Color KinematicTangentColor     = Color.yellow;
+		public static readonly Color MoveDirectionColor        = Color.yellow;
 
 		// PRIVATE MEMBERS
 
@@ -49,37 +52,78 @@ namespace Fusion.KCC
 
 		public void SetDefaults()
 		{
-			TraceStage           = EKCCStage.None;
-			UseFixedData         = true;
-			EnableLogs           = false;
-			ShowPath             = false;
-			ShowGrounding        = false;
-			ShowSteppingUp       = false;
-			ShowGroundSnapping   = false;
-			ShowGroundNormal     = false;
-			ShowGroundTangent    = false;
-			ShowKinematicTangent = false;
+			LogsTime           = default;
+			ShowPath           = default;
+			ShowSpeed          = default;
+			ShowGrounding      = default;
+			ShowSteppingUp     = default;
+			ShowGroundSnapping = default;
+			ShowGroundNormal   = default;
+			ShowGroundTangent  = default;
+			ShowMoveDirection  = default;
+			TraceExecution     = default;
+			TraceInfoCount     = default;
+			DisplayTime        = 30.0f;
+			SpeedScale         = 0.1f;
+			PointSize          = 0.01f;
 
-			ProcessorsStack.Clear();
+			if (TraceInfos.Length > 0)
+			{
+				Array.Clear(TraceInfos, 0, TraceInfos.Length);
+			}
 		}
 
-		public void FixedUpdate(KCC kcc)
+		public void BeforePredictedFixedMove(KCC kcc)
 		{
-			Log(kcc, true);
+			TraceInfoCount = default;
 		}
 
-		public void RenderUpdate(KCC kcc)
+		public void AfterPredictedFixedMove(KCC kcc)
 		{
+#if UNITY_EDITOR
+			if (ShowPath == true)
+			{
+				KCCData fixedData = kcc.FixedData;
+
+				UnityEngine.Debug.DrawLine(fixedData.BasePosition, fixedData.TargetPosition, FixedPathColor, DisplayTime);
+
+				DrawPoint(fixedData.TargetPosition, FixedPathColor, PointSize, DisplayTime);
+			}
+#endif
+
+			if (LogsTime != default)
+			{
+				if (LogsTime > 0.0f && Time.realtimeSinceStartup >= LogsTime)
+				{
+					LogsTime = default;
+				}
+
+				Log(kcc, true);
+			}
+		}
+
+		public void AfterRenderUpdate(KCC kcc)
+		{
+#if UNITY_EDITOR
 			KCCData fixedData  = kcc.FixedData;
 			KCCData renderData = kcc.RenderData;
 
 			if (ShowPath == true)
 			{
-				UnityEngine.Debug.DrawLine(fixedData.BasePosition, fixedData.TargetPosition, FixedPathColor, DisplayTime);
-				UnityEngine.Debug.DrawLine(renderData.BasePosition, renderData.TargetPosition, RenderPathColor, DisplayTime);
+				if (kcc.IsPredictingInRenderUpdate == true)
+				{
+					UnityEngine.Debug.DrawLine(renderData.BasePosition, renderData.TargetPosition, RenderPathColor, DisplayTime);
+				}
+
+				DrawPoint(renderData.TargetPosition, RenderPathColor, PointSize, DisplayTime);
 			}
 
-			KCCData selectedData = UseFixedData == true ? fixedData : renderData;
+			KCCData selectedData = kcc.Object.IsInSimulation == true ? fixedData : renderData;
+
+			if (ShowSpeed == true)
+			{
+				UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + Vector3.up * selectedData.RealVelocity.magnitude * SpeedScale, SpeedColor, DisplayTime);
+			}
 
 			if (ShowGrounding == true)
 			{
@@ -89,7 +133,7 @@ namespace Fusion.KCC
 				}
 				else if (selectedData.IsGrounded == false && selectedData.WasGrounded == true)
 				{
-					UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + Vector3.up, WasGroundedColor, DisplayTime);
+					UnityEngine.Debug.DrawLine(selectedData.BasePosition, selectedData.BasePosition + Vector3.up, WasGroundedColor, DisplayTime);
 				}
 			}
 
@@ -105,23 +149,27 @@ namespace Fusion.KCC
 				}
 			}
 
-			if (ShowGroundNormal     == true) { UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + selectedData.GroundNormal,     GroundNormalColor,     DisplayTime); }
-			if (ShowGroundTangent    == true) { UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + selectedData.GroundTangent,    GroundTangentColor,    DisplayTime); }
-			if (ShowKinematicTangent == true) { UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + selectedData.KinematicTangent, KinematicTangentColor, DisplayTime); }
+			if (ShowGroundNormal  == true) { UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + selectedData.GroundNormal,                     GroundNormalColor,  DisplayTime); }
+			if (ShowGroundTangent == true) { UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + selectedData.GroundTangent,                    GroundTangentColor, DisplayTime); }
+			if (ShowMoveDirection == true) { UnityEngine.Debug.DrawLine(selectedData.TargetPosition, selectedData.TargetPosition + selectedData.RealVelocity.ClampToNormalized(), MoveDirectionColor, DisplayTime); }
+#endif
 
-			Log(kcc, false);
-		}
+			if (LogsTime != default)
+			{
+				if (LogsTime > 0.0f && Time.realtimeSinceStartup >= LogsTime)
+				{
+					LogsTime = default;
+				}
 
-		public void Reset()
-		{
-			ProcessorsStack.Clear();
+				Log(kcc, false);
+			}
 		}
 
 		public void DrawGroundSnapping(Vector3 targetPosition, Vector3 targetGroundedPosition, Vector3 targetSnappedPosition, bool isInFixedUpdate)
 		{
-			if (ShowGroundSnapping == false)
+			if (isInFixedUpdate == false)
 				return;
-			if (UseFixedData != isInFixedUpdate)
+			if (ShowGroundSnapping == false)
 				return;
 
 			UnityEngine.Debug.DrawLine(targetPosition, targetPosition + Vector3.up, GroundSnapingColor, DisplayTime);
@@ -129,30 +177,111 @@ namespace Fusion.KCC
 			UnityEngine.Debug.DrawLine(targetPosition, targetSnappedPosition, GroundSnapPositionColor, DisplayTime);
 		}
 
-		// PRIVATE METHODS
-
-		private void Log(KCC kcc, bool isInFixedUpdate)
+		public bool TraceStage(KCC kcc, Type type, int level)
 		{
-			if (EnableLogs == false)
-				return;
+			if (TraceExecution == false)
+				return false;
+			if (kcc.IsInFixedUpdate == false)
+				return false;
 
-			KCCData data;
-			_stringBuilder.Clear();
-
-			if (isInFixedUpdate == true)
+			if (TraceInfoCount >= TraceInfos.Length)
 			{
-				data = kcc.FixedData;
-				_stringBuilder.Append($"[F]");
+				Array.Resize(ref TraceInfos, TraceInfos.Length + KCC.CACHE_SIZE);
+			}
+
+			KCCTraceInfo traceInfo = TraceInfos[TraceInfoCount];
+			if (traceInfo == null)
+			{
+				traceInfo = new KCCTraceInfo();
+				TraceInfos[TraceInfoCount] = traceInfo;
+			}
+
+			traceInfo.Set(EKCCTrace.Stage, type, type.Name, level, default);
+			++TraceInfoCount;
+
+			return true;
+		}
+
+		public bool TraceStage(KCC kcc, Type type, string name, int level)
+		{
+			if (TraceExecution == false)
+				return false;
+			if (kcc.IsInFixedUpdate == false)
+				return false;
+
+			if (TraceInfoCount >= TraceInfos.Length)
+			{
+				Array.Resize(ref TraceInfos, TraceInfos.Length + KCC.CACHE_SIZE);
+			}
+
+			KCCTraceInfo traceInfo = TraceInfos[TraceInfoCount];
+			if (traceInfo == null)
+			{
+				traceInfo = new KCCTraceInfo();
+				TraceInfos[TraceInfoCount] = traceInfo;
+			}
+
+			traceInfo.Set(EKCCTrace.Stage, type, name, level, default);
+			++TraceInfoCount;
+
+			return true;
+		}
+
+		public bool TraceProcessor(IKCCProcessor processor, int level)
+		{
+			if (TraceExecution == false)
+				return false;
+
+			if (TraceInfoCount >= TraceInfos.Length)
+			{
+				Array.Resize(ref TraceInfos, TraceInfos.Length + KCC.CACHE_SIZE);
+			}
+
+			KCCTraceInfo traceInfo = TraceInfos[TraceInfoCount];
+			if (traceInfo == null)
+			{
+				traceInfo = new KCCTraceInfo();
+				TraceInfos[TraceInfoCount] = traceInfo;
+			}
+
+			traceInfo.Set(EKCCTrace.Processor, default, default, level, processor);
+			++TraceInfoCount;
+
+			return true;
+		}
+
+		[HideInCallstack]
+		public void Dump(KCC kcc)
+		{
+			Log(kcc, kcc.IsInFixedUpdate);
+		}
+
+		public void EnableLogs(KCC kcc, float duration)
+		{
+			if (duration == default)
+			{
+				LogsTime = default;
+			}
+			else if (duration >= 0.0f)
+			{
+				LogsTime = Time.realtimeSinceStartup + duration;
 			}
 			else
 			{
-				data = kcc.RenderData;
-				_stringBuilder.Append($"[R]");
+				LogsTime = -1.0f;
 			}
+		}
+
+		// PRIVATE METHODS
+
+		[HideInCallstack]
+		private void Log(KCC kcc, bool isInFixedUpdate)
+		{
+			KCCData data = kcc.Data;
+
+			_stringBuilder.Clear();
 
 			{
-				_stringBuilder.Append($" | {nameof(data.Frame)               } {data.Frame.ToString()                   }");
-				_stringBuilder.Append($" | {nameof(data.Tick)                } {data.Tick.ToString()                    }");
 				_stringBuilder.Append($" | {nameof(data.Alpha)               } {data.Alpha.ToString("F4")               }");
 				_stringBuilder.Append($" | {nameof(data.Time)                } {data.Time.ToString("F6")                }");
 				_stringBuilder.Append($" | {nameof(data.DeltaTime)           } {data.DeltaTime.ToString("F6")           }");
@@ -164,11 +293,6 @@ namespace Fusion.KCC
 				_stringBuilder.Append($" | {nameof(data.LookYaw)             } {data.LookYaw.ToString("0.00°")          }");
 
 				_stringBuilder.Append($" | {nameof(data.InputDirection)      } {data.InputDirection.ToString("F4")      }");
-				_stringBuilder.Append($" | {nameof(data.ExternalVelocity)    } {data.ExternalVelocity.ToString("F4")    }");
-				_stringBuilder.Append($" | {nameof(data.ExternalAcceleration)} {data.ExternalAcceleration.ToString("F4")}");
-				_stringBuilder.Append($" | {nameof(data.ExternalImpulse)     } {data.ExternalImpulse.ToString("F4")     }");
-				_stringBuilder.Append($" | {nameof(data.ExternalForce)       } {data.ExternalForce.ToString("F4")       }");
-
 				_stringBuilder.Append($" | {nameof(data.DynamicVelocity)     } {data.DynamicVelocity.ToString("F4")     }");
 				_stringBuilder.Append($" | {nameof(data.KinematicSpeed)      } {data.KinematicSpeed.ToString("F4")      }");
 				_stringBuilder.Append($" | {nameof(data.KinematicTangent)    } {data.KinematicTangent.ToString("F4")    }");
@@ -182,6 +306,7 @@ namespace Fusion.KCC
 				_stringBuilder.Append($" | {nameof(data.WasSteppingUp)       } {(data.WasSteppingUp       ? "1" : "0")  }");
 				_stringBuilder.Append($" | {nameof(data.IsSnappingToGround)  } {(data.IsSnappingToGround  ? "1" : "0")  }");
 				_stringBuilder.Append($" | {nameof(data.WasSnappingToGround) } {(data.WasSnappingToGround ? "1" : "0")  }");
+				_stringBuilder.Append($" | {nameof(data.JumpFrames)          } {data.JumpFrames.ToString()              }");
 				_stringBuilder.Append($" | {nameof(data.HasJumped)           } {(data.HasJumped           ? "1" : "0")  }");
 				_stringBuilder.Append($" | {nameof(data.HasTeleported)       } {(data.HasTeleported       ? "1" : "0")  }");
 
@@ -200,16 +325,32 @@ namespace Fusion.KCC
 				_stringBuilder.Append($" | {nameof(data.Hits)                } {data.Hits.Count.ToString()              }");
 			}
 
-			if (isInFixedUpdate == true)
-			{
-				UnityEngine.Debug.LogWarning(_stringBuilder.ToString());
-			}
-			else
+			if (isInFixedUpdate == false)
 			{
 				_stringBuilder.Append($" | {nameof(kcc.PredictionError)      } {kcc.PredictionError.ToString("F4")      }");
-
-				UnityEngine.Debug.Log(_stringBuilder.ToString());
 			}
+
+			kcc.Log(_stringBuilder.ToString());
+		}
+
+		private static void DrawPoint(Vector3 position, Color color, float size, float displayTime)
+		{
+			Vector3 pX = position + new Vector3( size,  0.0f,  0.0f);
+			Vector3 nX = position + new Vector3(-size,  0.0f,  0.0f);
+			Vector3 pY = position + new Vector3( 0.0f,  size,  0.0f);
+			Vector3 nY = position + new Vector3( 0.0f, -size,  0.0f);
+			Vector3 pZ = position + new Vector3( 0.0f,  0.0f,  size);
+			Vector3 nZ = position + new Vector3( 0.0f,  0.0f, -size);
+
+			UnityEngine.Debug.DrawLine(pY, pX, color, displayTime);
+			UnityEngine.Debug.DrawLine(pY, nX, color, displayTime);
+			UnityEngine.Debug.DrawLine(pY, pZ, color, displayTime);
+			UnityEngine.Debug.DrawLine(pY, nZ, color, displayTime);
+
+			UnityEngine.Debug.DrawLine(nY, pX, color, displayTime);
+			UnityEngine.Debug.DrawLine(nY, nX, color, displayTime);
+			UnityEngine.Debug.DrawLine(nY, pZ, color, displayTime);
+			UnityEngine.Debug.DrawLine(nY, nZ, color, displayTime);
 		}
 	}
 }

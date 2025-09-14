@@ -25,12 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1633185897547048946}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1599744391455690896}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8239899649484783389
 MeshFilter:
@@ -87,6 +88,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1161953712026037327, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
@@ -138,6 +140,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4906331035016595341, guid: 28979aa7458080940b655b9800ea1a51, type: 3}
     - target: {fileID: 6727132063299379605, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
+      propertyPath: SortKey
+      value: 2551652452
+      objectReference: {fileID: 0}
+    - target: {fileID: 6727132063299379605, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
       value: 4932078881611349277
       objectReference: {fileID: 0}
@@ -150,6 +156,12 @@ PrefabInstance:
       value: FlashGrenadePickup
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2089961200163242580, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2553294892282947382}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17580a6c632e05f409085fc2dd33f57c, type: 3}
 --- !u!4 &1599744391455690896 stripped
 Transform:

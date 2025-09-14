@@ -8,8 +8,9 @@ namespace TPSBR
 	{
 		// PUBLIC MEMBERS
 
-		public int CachedCount   { get { return _all.Count;      } }
-		public int BorrowedCount { get { return _borrowed.Count; } }
+		public int  CachedCount       { get { return _all.Count;                    } }
+		public int  BorrowedCount     { get { return _borrowed.Count;               } }
+		public bool HideCachedObjects { get { return _hideCachedObjectsInHierarchy; } }
 
 		// PRIVATE MEMBERS
 

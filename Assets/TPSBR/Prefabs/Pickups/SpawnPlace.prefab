@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2695291582569918}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.444, y: 1, z: 0.3199997}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &3668225963023803994
 MonoBehaviour:
@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 6831452625959380939}
   _pickupPrefabs:
   - {fileID: 2234597929257676308, guid: 94f7abb541f49204c90e5e6384faac93, type: 3}
@@ -63,19 +62,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 1448876882705994230}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3668225963023803994}
   - {fileID: 1448876882705994230}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &1448876882705994230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,20 +82,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &747853463436008034
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,13 +113,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 747853463436008034}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 1.75, y: 0.5, z: 1.2199993}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &7238607814387650706
 MonoBehaviour:
@@ -148,7 +133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 4080473270193715308}
   _pickupPrefabs:
   - {fileID: 6061256743707649197, guid: 601e1dd95e360bd428e13886af43bcde, type: 3}
@@ -165,19 +149,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 8775781569553132732}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7238607814387650706}
   - {fileID: 8775781569553132732}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &8775781569553132732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,20 +169,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &1045869179003017303
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,6 +197,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1045869179003017303}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -244,7 +215,6 @@ Transform:
   - {fileID: 6667845734792015721}
   - {fileID: 7682744223287116002}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1045869179063905717
 GameObject:
@@ -272,13 +242,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1045869179063905717}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 1.75, y: 0.5, z: -1.29}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1045869179063905713
 MonoBehaviour:
@@ -292,7 +262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 1045869179063905718}
   _pickupPrefabs:
   - {fileID: 6198615961083387491, guid: 671206c3c0ad9e64aa2d6111ae4e1a04, type: 3}
@@ -309,19 +278,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 1045869179063905719}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1045869179063905713}
   - {fileID: 1045869179063905719}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &1045869179063905719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,20 +298,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &1859881024551063806
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,13 +329,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1859881024551063806}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.9, y: 0.74, z: -0.5800009}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &5099594896198713932
 MonoBehaviour:
@@ -394,10 +349,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 5330363111403703559}
   _pickupPrefabs:
-  - {fileID: 1450828408321133776, guid: 9e99cf4e2146b094abd90b7dccd1cdf8, type: 3}
+  - {fileID: 0}
   _refillTime: 40
 --- !u!114 &982738913069788947
 MonoBehaviour:
@@ -411,19 +365,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 4712662008475243746}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 5099594896198713932}
   - {fileID: 4712662008475243746}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &4712662008475243746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,20 +385,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &3482576131796231642
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,13 +416,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3482576131796231642}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 2.25, y: 0.5, z: -0.519}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &2983732344459403520
 MonoBehaviour:
@@ -496,7 +436,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 5918663046735861565}
   _pickupPrefabs:
   - {fileID: 1753923265918319972, guid: 93ff156a0ef76084c918a240b780304b, type: 3}
@@ -513,19 +452,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 4502324729606999570}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2983732344459403520}
   - {fileID: 4502324729606999570}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &4502324729606999570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -538,20 +472,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &3844307827893441155
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,13 +503,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3844307827893441155}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 1.331, y: 1, z: 0.3199997}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &6261782187232825964
 MonoBehaviour:
@@ -598,7 +523,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 1703767659000864896}
   _pickupPrefabs:
   - {fileID: 1214334607122330860, guid: 515d0a7122c2eca4cb0841021a46116a, type: 3}
@@ -615,19 +539,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 3889902026885636969}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6261782187232825964}
   - {fileID: 3889902026885636969}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &3889902026885636969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -640,20 +559,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &4670727221806053734
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,13 +589,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4670727221806053734}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: -11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7079640629519281151}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -90, y: 180, z: 0}
 --- !u!33 &432641539503464607
 MeshFilter:
@@ -763,13 +673,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5390599239982295952}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -1.405, y: 1, z: 0.3199997}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &8318686086488601406
 MonoBehaviour:
@@ -783,10 +693,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 5880320237387506984}
   _pickupPrefabs:
-  - {fileID: 6715959599694521071, guid: 0a542ea6c4d73284696f38edbd148a59, type: 3}
+  - {fileID: 0}
   _refillTime: 40
 --- !u!114 &6228939062614503504
 MonoBehaviour:
@@ -800,19 +709,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 5078848017780953199}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 8318686086488601406}
   - {fileID: 5078848017780953199}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &5078848017780953199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -825,20 +729,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &6273015964467713485
 GameObject:
   m_ObjectHideFlags: 0
@@ -865,13 +760,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6273015964467713485}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.94, y: 0.74, z: -0.58}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1233717156591728996
 MonoBehaviour:
@@ -885,7 +780,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 6667845734792015721}
   _pickupPrefabs:
   - {fileID: 644603425118098869, guid: c750a29126ddfd7488f13f77091ed1aa, type: 3}
@@ -902,19 +796,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 8032867611702268250}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1233717156591728996}
   - {fileID: 8032867611702268250}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &8032867611702268250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -927,20 +816,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &7079640629519382489
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,13 +847,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7079640629519382489}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7079640629519281151}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7079640629518478299
 MeshFilter:
@@ -1033,9 +913,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7079640629519382489}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 59.515083, y: 15, z: 35.496845}
   m_Center: {x: 0.000002861023, y: -5, z: -5.5087695}
 --- !u!1 &7079640629519382493
@@ -1063,13 +951,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7079640629519382493}
+  serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7079640629519281151}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!33 &7079640629518478303
 MeshFilter:
@@ -1144,6 +1032,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7079640629519382495}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.5}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
@@ -1153,7 +1042,6 @@ Transform:
   - {fileID: 7079640629519281145}
   - {fileID: 4519526520520392962}
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8651624427202968919
 GameObject:
@@ -1181,13 +1069,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8651624427202968919}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.534, y: 1, z: 0.32}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &7738385777070104611
 MonoBehaviour:
@@ -1201,7 +1089,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 6832058951203142792}
   _pickupPrefabs:
   - {fileID: 2234597929257676308, guid: 197f5bfc88b9b304bb7698c8f5a2af5d, type: 3}
@@ -1218,19 +1105,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 4583789305933674558}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7738385777070104611}
   - {fileID: 4583789305933674558}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &4583789305933674558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1243,20 +1125,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &8938944533573142857
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,13 +1156,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8938944533573142857}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.74, z: -0.58000183}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1045869179003017296}
-  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1855064678800951104
 MonoBehaviour:
@@ -1303,10 +1176,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cc53b9e9aa28e4f88e178b6be86d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _spawnPoint: {fileID: 7682744223287116002}
   _pickupPrefabs:
-  - {fileID: 2715304033126495746, guid: 1d7da68e9c437244a94b4a3d6bafb095, type: 3}
+  - {fileID: 0}
   _refillTime: 40
 --- !u!114 &3564566411982095640
 MonoBehaviour:
@@ -1320,19 +1192,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 0
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 7004111804831430130}
   Flags: 2561
-  NetworkGuid:
-    RawGuidValue: 37943556c98f418e9f9c56060e4a8b81
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1855064678800951104}
   - {fileID: 7004111804831430130}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &7004111804831430130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1345,17 +1212,8 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0

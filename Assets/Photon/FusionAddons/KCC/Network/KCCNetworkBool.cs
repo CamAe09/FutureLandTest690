@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 
@@ -31,19 +31,19 @@ namespace Fusion.KCC
 			*ptr = _get(Context) == true ? 1 : 0;
 		}
 
-		public override void Interpolate(InterpolationData interpolationData)
+		public override void Interpolate(KCCInterpolationInfo interpolationInfo)
 		{
-			bool fromValue = *interpolationData.From != 0 ? true : false;
-			bool toValue   = *interpolationData.To   != 0 ? true : false;
+			bool fromValue = interpolationInfo.FromBuffer.ReinterpretState<int>(interpolationInfo.Offset) != 0 ? true : false;
+			bool toValue   = interpolationInfo.ToBuffer.ReinterpretState<int>(interpolationInfo.Offset)   != 0 ? true : false;
 			bool value;
 
 			if (_interpolate != null)
 			{
-				value = _interpolate(Context, interpolationData.Alpha, fromValue, toValue);
+				value = _interpolate(Context, interpolationInfo.Alpha, fromValue, toValue);
 			}
 			else
 			{
-				value = interpolationData.Alpha < 0.5f ? fromValue: toValue;
+				value = interpolationInfo.Alpha < 0.5f ? fromValue: toValue;
 			}
 
 			_set(Context, value);

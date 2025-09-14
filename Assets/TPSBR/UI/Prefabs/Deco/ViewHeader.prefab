@@ -32,7 +32,6 @@ RectTransform:
   - {fileID: 3104329146779437294}
   - {fileID: 1667144836961521518}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -70,7 +69,6 @@ RectTransform:
   - {fileID: 4309405897340212046}
   - {fileID: 6207238289063712750}
   m_Father: {fileID: 3429960855286622950}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -108,7 +106,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9014847268650290650}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -243,7 +240,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9014847268650290650}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -352,6 +348,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3429960855286622950}
     m_Modifications:
     - target: {fileID: 3789262876281430737, guid: ab6d528d8b4fa214baf2e27589f10931, type: 3}
@@ -435,6 +432,9 @@ PrefabInstance:
       value: BackButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab6d528d8b4fa214baf2e27589f10931, type: 3}
 --- !u!224 &3104329146779437294 stripped
 RectTransform:
@@ -446,6 +446,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 3429960855286622950}
     m_Modifications:
     - target: {fileID: 4924011049179937564, guid: 1e8c7f724ed16254691f9343637e5b61, type: 3}
@@ -537,6 +538,9 @@ PrefabInstance:
       value: BorderGroup
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e8c7f724ed16254691f9343637e5b61, type: 3}
 --- !u!224 &1667144836961521518 stripped
 RectTransform:

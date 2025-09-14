@@ -41,6 +41,8 @@ namespace TPSBR
 			Health = _maxHealth;
 
 			_originalPosition = transform.position;
+
+			Runner.SetIsSimulated(Object, true);
 		}
 
 		public override void FixedUpdateNetwork()
@@ -59,9 +61,8 @@ namespace TPSBR
 				SetColor(HitColor);
 			}
 
-			if (Object.HasStateAuthority)
+			if (HasStateAuthority == true)
 			{
-
 				var position = transform.position;
 				position.z += Velocity * Runner.DeltaTime;
 				var distance = position.z - _originalPosition.z;

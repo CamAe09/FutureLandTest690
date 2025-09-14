@@ -1,11 +1,11 @@
 using UnityEngine;
-using Fusion.KCC;
 using System.Collections.Generic;
 using Fusion;
+using Fusion.Addons.KCC;
 
 namespace TPSBR
 {
-	public class DamageArea : NetworkKCCProcessor
+	public sealed class DamageArea : NetworkKCCProcessor
 	{
 		// PRIVATE MEMBERS
 
@@ -19,16 +19,11 @@ namespace TPSBR
 
 		private HashSet<IHitTarget> _targets = new HashSet<IHitTarget>();
 
-		// KCCProcessor INTERFACE
-
-		public override EKCCStages GetValidStages(KCC kcc, KCCData data)
-		{
-			return EKCCStages.None;
-		}
+		// NetworkKCCProcessor INTERFACE
 
 		public override void OnEnter(KCC kcc, KCCData data)
 		{
-			if (kcc.IsInFixedUpdate == false || Object.HasStateAuthority == false)
+			if (kcc.IsInFixedUpdate == false || HasStateAuthority == false)
 				return;
 
 			var target = kcc.GetComponent<IHitTarget>();
@@ -40,7 +35,7 @@ namespace TPSBR
 
 		public override void OnExit(KCC kcc, KCCData data)
 		{
-			if (kcc.IsInFixedUpdate == false || Object.HasStateAuthority == false)
+			if (kcc.IsInFixedUpdate == false || HasStateAuthority == false)
 				return;
 
 			var target = kcc.GetComponent<IHitTarget>();
@@ -52,9 +47,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			base.FixedUpdateNetwork();
-
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (_damagePerSecond <= 0f)

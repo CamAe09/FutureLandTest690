@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Collections.Generic;
 	using UnityEngine;
@@ -14,17 +14,17 @@ namespace Fusion.KCC
 
 		// KCCInteraction<TInteraction> INTERFACE
 
-		protected override void OnInitialize()
+		public override void Initialize()
 		{
 			Processor = Provider is IKCCProcessorProvider processorProvider ? processorProvider.GetProcessor() : null;
 		}
 
-		protected override void OnDeinitialize()
+		public override void Deinitialize()
 		{
 			Processor = null;
 		}
 
-		protected override void OnCopyFromOther(KCCModifier other)
+		public override void CopyFromOther(KCCModifier other)
 		{
 			Processor = other.Processor;
 		}

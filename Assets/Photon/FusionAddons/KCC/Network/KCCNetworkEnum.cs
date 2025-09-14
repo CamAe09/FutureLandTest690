@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 
@@ -31,19 +31,19 @@ namespace Fusion.KCC
 			*ptr = EnumConvertor.ToInt(_get(Context));
 		}
 
-		public override void Interpolate(InterpolationData interpolationData)
+		public override void Interpolate(KCCInterpolationInfo interpolationInfo)
 		{
-			int fromValue = *interpolationData.From;
-			int toValue   = *interpolationData.To;
+			int fromValue = interpolationInfo.FromBuffer.ReinterpretState<int>(interpolationInfo.Offset);
+			int toValue   = interpolationInfo.ToBuffer.ReinterpretState<int>(interpolationInfo.Offset);
 			int value;
 
 			if (_interpolate != null)
 			{
-				value = EnumConvertor.ToInt(_interpolate(Context, interpolationData.Alpha, EnumConvertor.ToEnum<TEnum>(fromValue), EnumConvertor.ToEnum<TEnum>(toValue)));
+				value = EnumConvertor.ToInt(_interpolate(Context, interpolationInfo.Alpha, EnumConvertor.ToEnum<TEnum>(fromValue), EnumConvertor.ToEnum<TEnum>(toValue)));
 			}
 			else
 			{
-				value = interpolationData.Alpha < 0.5f ? fromValue: toValue;
+				value = interpolationInfo.Alpha < 0.5f ? fromValue: toValue;
 			}
 
 			_set(Context, EnumConvertor.ToEnum<TEnum>(value));

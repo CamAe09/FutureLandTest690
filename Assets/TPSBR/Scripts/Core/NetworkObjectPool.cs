@@ -4,36 +4,41 @@ using Fusion;
 
 namespace TPSBR
 {
-
-	public class NetworkObjectPool : INetworkObjectPool
+	public class NetworkObjectPool : INetworkObjectProvider
 	{
 		public SceneContext Context { get; set; }
 
 		private Dictionary<NetworkPrefabId, Stack<NetworkObject>> _cached   = new Dictionary<NetworkPrefabId, Stack<NetworkObject>>(32);
 		private Dictionary<NetworkObject, NetworkPrefabId>        _borrowed = new Dictionary<NetworkObject, NetworkPrefabId>();
 
-		NetworkObject INetworkObjectPool.AcquireInstance(NetworkRunner runner, NetworkPrefabInfo info)
+		NetworkObjectAcquireResult INetworkObjectProvider.AcquirePrefabInstance(NetworkRunner runner, in NetworkPrefabAcquireContext context, out NetworkObject result)
 		{
-			if (_cached.TryGetValue(info.Prefab, out var objects) == false)
+			if (_cached.TryGetValue(context.PrefabId, out var objects) == false)
 			{
-				objects = _cached[info.Prefab] = new Stack<NetworkObject>();
+				objects = _cached[context.PrefabId] = new Stack<NetworkObject>();
 			}
 
 			if (objects.Count > 0)
 			{
 				var oldInstance = objects.Pop();
-				_borrowed[oldInstance] = info.Prefab;
+				_borrowed[oldInstance] = context.PrefabId;
 
 				oldInstance.SetActive(true);
 
-				return oldInstance;
+				result = oldInstance;
+				runner.MoveToRunnerScene(result);
+				return NetworkObjectAcquireResult.Success;
 			}
 
-			if (runner.Config.PrefabTable.TryGetPrefab(info.Prefab, out var original) == false)
-				return null;
+			NetworkObject original = runner.Config.PrefabTable.Load(context.PrefabId, true);
+			if (original == null)
+			{
+				result = default;
+				return NetworkObjectAcquireResult.Failed;
+			}
 
 			var instance = Object.Instantiate(original);
-			_borrowed[instance] = info.Prefab;
+			_borrowed[instance] = context.PrefabId;
 
 			AssignContext(instance);
 
@@ -42,12 +47,21 @@ namespace TPSBR
 				AssignContext(instance.NestedObjects[i]);
 			}
 
-			return instance;
+			result = instance;
+			runner.MoveToRunnerScene(result);
+			return NetworkObjectAcquireResult.Success;
 		}
 
-		void INetworkObjectPool.ReleaseInstance(NetworkRunner runner, NetworkObject instance, bool isSceneObject)
+		void INetworkObjectProvider.ReleaseInstance(NetworkRunner runner, in NetworkObjectReleaseContext context)
 		{
-			if (isSceneObject == false && runner.IsShutdown == false)
+			if (context.IsNestedObject == true)
+				return;
+
+			NetworkObject instance = context.Object;
+			if (instance == null)
+				return;
+
+			if (instance.NetworkTypeId.IsSceneObject == false && runner.IsShutdown == false)
 			{
 				if (_borrowed.TryGetValue(instance, out var prefabID) == true)
 				{
@@ -69,19 +83,16 @@ namespace TPSBR
 			}
 		}
 
+		public NetworkPrefabId GetPrefabId(NetworkRunner runner, NetworkObjectGuid prefabGuid)
+		{
+			return runner.Prefabs.GetId(prefabGuid);
+		}
+
 		private void AssignContext(NetworkObject instance)
 		{
 			for (int i = 0, count = instance.NetworkedBehaviours.Length; i < count; i++)
 			{
 				if (instance.NetworkedBehaviours[i] is IContextBehaviour cachedBehaviour)
-				{
-					cachedBehaviour.Context = Context;
-				}
-			}
-
-			for (int i = 0, count = instance.SimulationBehaviours.Length; i < count; i++)
-			{
-				if (instance.SimulationBehaviours[i] is IContextBehaviour cachedBehaviour)
 				{
 					cachedBehaviour.Context = Context;
 				}

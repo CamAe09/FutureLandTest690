@@ -4,10 +4,10 @@ using UnityEngine;
 namespace TPSBR
 {
 	using Fusion;
-	using Fusion.Animations;
+	using Fusion.Addons.AnimationController;
 
 	[RequireComponent(typeof(AnimationController))]
-	[OrderAfter(typeof(HitboxManager), typeof(AnimationController))]
+	[DefaultExecutionOrder(10000)]
 	public sealed class AnimationsRecorder : NetworkBehaviour
 	{
 		// PRIVATE MEMBERS
@@ -106,7 +106,7 @@ namespace TPSBR
 			if (writeFixed  == true) recorder.Add(layer.Weight.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 			if (writeRender == true) recorder.Add(layer.InterpolatedWeight.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 
-			recorder.Add(layer.GetPlayableWeight().ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
+			recorder.Add(layer.GetPlayableInputWeight().ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 
 			for (int i = 0; i < layer.States.Count; ++i)
 			{
@@ -123,7 +123,7 @@ namespace TPSBR
 
 			headers.Add($"S|{prefix}|{state.name}|PW");
 
-			if (state is ClipState || state is MultiClipState || state is BlendTreeState || state is MultiBlendTreeState || state is MultiMirrorBlendTreeState)
+			if (state is ClipState || state is MultiClipState || state is BlendTreeState || state is MultiBlendTreeState || state is MirrorBlendTreeState)
 			{
 				if (addFixed  == true) headers.Add($"S|{prefix}|{state.name}|AT");
 				if (addRender == true) headers.Add($"S|{prefix}|{state.name}|IAT");
@@ -140,7 +140,7 @@ namespace TPSBR
 			if (writeFixed  == true) recorder.Add(state.Weight.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 			if (writeRender == true) recorder.Add(state.InterpolatedWeight.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 
-			recorder.Add(state.GetPlayableWeight().ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
+			recorder.Add(state.GetPlayableInputWeight().ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 
 			if (state is ClipState clipState)
 			{
@@ -162,7 +162,7 @@ namespace TPSBR
 				if (writeFixed  == true) recorder.Add(multiBlendTreeState.AnimationTime.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 				if (writeRender == true) recorder.Add(multiBlendTreeState.InterpolatedAnimationTime.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 			}
-			else if (state is MultiMirrorBlendTreeState multiMirrorBlendTreeState)
+			else if (state is MirrorBlendTreeState multiMirrorBlendTreeState)
 			{
 				if (writeFixed  == true) recorder.Add(multiMirrorBlendTreeState.AnimationTime.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
 				if (writeRender == true) recorder.Add(multiMirrorBlendTreeState.InterpolatedAnimationTime.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));

@@ -1,4 +1,5 @@
 using Fusion;
+using Fusion.Addons.Physics;
 using UnityEngine;
 using Plugins.Outline;
 
@@ -6,15 +7,18 @@ namespace TPSBR
 {
 	public interface IDynamicPickupProvider
 	{
-		public string     Name                { get; }
-		public string     Description         { get; }
-		public Transform  InterpolationTarget { get; }
-		public Collider   Collider            { get; }
-		public float      DespawnTime         { get; }
+		public string    Name                { get; }
+		public string    Description         { get; }
+		public Transform InterpolationTarget { get; }
+		public Collider  Collider            { get; }
+		public float     DespawnTime         { get; }
+
+		public void Assigned(DynamicPickup pickup);
+		public void Unassigned(DynamicPickup pickup);
 	}
 
-	[RequireComponent(typeof(NetworkRigidbody))]
-	public class DynamicPickup : ContextBehaviour, IPickup
+	[RequireComponent(typeof(NetworkRigidbody3D))]
+	public sealed class DynamicPickup : ContextBehaviour, IPickup
 	{
 		// PUBLIC MEMBERS
 
@@ -36,7 +40,7 @@ namespace TPSBR
 
 		private NetworkObject _dynamicObject;
 
-		private NetworkRigidbody _networkRigidbody;
+		private NetworkRigidbody3D _networkRigidbody;
 
 		private string _name;
 		private string _description;
@@ -74,10 +78,14 @@ namespace TPSBR
 
 			Provider.Collider.enabled = true;
 			_networkRigidbody.InterpolationTarget = Provider.InterpolationTarget;
+
+			Provider.Assigned(this);
 		}
 
 		public void UnassignObject()
 		{
+			Provider.Unassigned(this);
+
 			if (_dynamicObject.transform.parent == transform && Runner.IsShutdown == false)
 			{
 				_dynamicObject.transform.SetParent(null, false);
@@ -133,34 +141,38 @@ namespace TPSBR
 
 			_dynamicObjectID = default;
 
+			#if UNITY_6000_0_OR_NEWER
+			_networkRigidbody.Rigidbody.linearVelocity = Vector3.zero;
+			#else
 			_networkRigidbody.Rigidbody.velocity = Vector3.zero;
+			#endif
 			_networkRigidbody.Rigidbody.angularVelocity = Vector3.zero;
 		}
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority && _despawnCooldown.Expired(Runner) == true)
+			if (HasStateAuthority == false)
+				return;
+
+			if (_despawnCooldown.Expired(Runner) == true)
 			{
 				Runner.Despawn(Object);
 				return;
 			}
 
-			if (_dynamicObjectID.IsValid == true && _dynamicObject == null)
-			{
-				AssignObject(_dynamicObjectID);
-			}
+			UpdateLocalState();
+		}
 
-			if (_dynamicObjectID.IsValid == false && _dynamicObject != null)
-			{
-				UnassignObject();
-			}
+		public override void Render()
+		{
+			UpdateLocalState();
 		}
 
 		// MONOBEHAVIOUR
 
-		protected void Awake()
+		private void Awake()
 		{
-			_networkRigidbody = GetComponent<NetworkRigidbody>();
+			_networkRigidbody = GetComponent<NetworkRigidbody3D>();
 			_outline = GetComponent<OutlineBehaviour>();
 
 			if (_outline != null)
@@ -171,7 +183,7 @@ namespace TPSBR
 			}
 		}
 
-		protected void Update()
+		private void Update()
 		{
 			UpdateOutline();
 		}
@@ -184,6 +196,19 @@ namespace TPSBR
 		bool    IInteraction.IsActive    => true;
 
 		// PRIVATE METHODS
+
+		private void UpdateLocalState()
+		{
+			if (_dynamicObjectID.IsValid == true && _dynamicObject == null)
+			{
+				AssignObject(_dynamicObjectID);
+			}
+
+			if (_dynamicObjectID.IsValid == false && _dynamicObject != null)
+			{
+				UnassignObject();
+			}
+		}
 
 		private void UpdateOutline()
 		{

@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3804636754328831335}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1161953712026037327}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2618470621431284907
 BoxCollider:
@@ -79,6 +79,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8017275584695234895}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -86,7 +87,6 @@ Transform:
   m_Children:
   - {fileID: 2089961200163242580}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6727132063299379605
 MonoBehaviour:
@@ -100,19 +100,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 456355788
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 1462166693620786889}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 504ddbb66a79cee4e82d3a5003500362
+  Flags: 264449
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3358793680726467782}
   - {fileID: 1462166693620786889}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &3358793680726467782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,7 +120,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf973d45df649be824647d5247d9b94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _consumeSound: {fileID: 0}
   _visuals: {fileID: 3804636754328831335}
   _despawnDelay: 2
@@ -133,7 +127,7 @@ MonoBehaviour:
   _interactionName: 
   _interactionDescription: 
   _startBehaviour: 2
-  _weaponPrefab: {fileID: 0}
+  _weaponPrefab: {fileID: 6516703743052655731, guid: ae26e4338c682fb429ac576d2bcd27b1, type: 3}
 --- !u!114 &1462166693620786889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,19 +140,8 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0

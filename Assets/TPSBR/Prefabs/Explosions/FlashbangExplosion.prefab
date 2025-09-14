@@ -25,6 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5902137800868858592}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +33,6 @@ Transform:
   m_Children:
   - {fileID: 7332639370941817884}
   m_Father: {fileID: 6841296474125052537}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &2286840205841957520
 AudioSource:
@@ -200,6 +200,7 @@ MonoBehaviour:
     Clips:
     - {fileID: 8300000, guid: 84a72ebdc576c4441b5d8859e20f8cda, type: 3}
     Volume: 1
+    PitchShift: 0
     MaxPitchChange: 0
     Delay: 0
     Loop: 0
@@ -235,6 +236,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6841296474125052540}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -242,7 +244,6 @@ Transform:
   m_Children:
   - {fileID: 1716336482896687010}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6275686547592026285
 MonoBehaviour:
@@ -256,7 +257,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd2abc85fc28054bac900ac19b87286, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
   _innerRadius: 20
   _outerRadius: 70
   _innerFlashValue: 1
@@ -282,19 +282,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 404558743
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 5419135884938141755}
   Flags: 2305
-  NetworkGuid:
-    RawGuidValue: de0a81e97c9e23d47918ef8db186b184
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6275686547592026285}
   - {fileID: 5419135884938141755}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &5419135884938141755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,20 +302,11 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 0}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!82 &8045829375601073935
 AudioSource:
   m_ObjectHideFlags: 0
@@ -422,6 +408,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 1716336482896687010}
     m_Modifications:
     - target: {fileID: 1202654849266560, guid: 90275866da1844b42a6ede3f4ee0c68b, type: 3}
@@ -577,6 +564,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90275866da1844b42a6ede3f4ee0c68b, type: 3}
 --- !u!4 &7332639370941817884 stripped
 Transform:

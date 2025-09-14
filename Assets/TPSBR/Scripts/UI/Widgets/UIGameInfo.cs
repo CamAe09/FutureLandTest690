@@ -37,7 +37,7 @@ namespace TPSBR.UI
 			++_frameCount;
 
 			_deltaTime += Time.deltaTime;
-			_rtt       += runner.Simulation.GetRTT();
+			_rtt       += runner.GetPlayerRtt(PlayerRef.None);
 
 			if (_deltaTime > 0.25f)
 			{

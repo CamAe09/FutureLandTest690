@@ -19,7 +19,7 @@ namespace TPSBR.UI
 		private RectTransform    _recordsGapSeparator;
 
 		[SerializeField]
-		private int              _maxShownRecords       = 10;
+		private int              _maxShownRecords = 10;
 		[SerializeField]
 		private int              _fixedFirstPlaces = 3;
 
@@ -35,6 +35,7 @@ namespace TPSBR.UI
 			base.OnInitialize();
 
 			_items = new ElementCache<UIScoreboardItem>(_item, 16);
+			_refreshTimer = default;
 		}
 
 		protected override void OnVisible()
@@ -68,7 +69,7 @@ namespace TPSBR.UI
 
 			int playersCount = 0;
 
-			foreach (var player in Context.NetworkGame.Players)
+			foreach (var player in Context.NetworkGame.ActivePlayers)
 			{
 				if (player == null)
 					continue;
@@ -148,7 +149,7 @@ namespace TPSBR.UI
 
 			ListPool.Return(allStatistics);
 
-			_refreshTimer = 1f;
+			_refreshTimer = Context.GameplayMode.State == GameplayMode.EState.Finished ? 9999f : 1f;
 		}
 
 		// HELPERS

@@ -1,17 +1,12 @@
 namespace TPSBR
 {
 	using UnityEngine;
-	using Fusion.KCC;
 	using Fusion;
+	using Fusion.Addons.KCC;
 
 	public class KillArea : KCCProcessor
 	{
 		// KCCProcessor INTERFACE
-
-		public override EKCCStages GetValidStages(KCC kcc, KCCData data)
-		{
-			return EKCCStages.None;
-		}
 
 		public override void OnEnter(KCC kcc, KCCData data)
 		{

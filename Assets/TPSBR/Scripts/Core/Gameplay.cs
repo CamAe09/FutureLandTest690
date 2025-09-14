@@ -1,6 +1,7 @@
 namespace TPSBR
 {
 	using System.Collections;
+	using Fusion;
 	using UnityEngine;
 	using UnityEngine.SceneManagement;
 
@@ -36,12 +37,12 @@ namespace TPSBR
 			while (asyncOp.isDone == false)
 				yield return null;
 
-			for (int i = SceneManager.sceneCount; i --> 0;)
+			for (int i = SceneManager.sceneCount; i-- > 0;)
 			{
 				var unityScene = SceneManager.GetSceneAt(i);
 				if (unityScene.name == UI_SCENE_NAME)
 				{
-					_UIScene      = unityScene;
+					_UIScene = unityScene;
 					var uiService = _UIScene.GetComponent<UI.SceneUI>(true);
 
 					foreach (GameObject rootObject in unityScene.GetRootGameObjects())
@@ -63,9 +64,9 @@ namespace TPSBR
 
 		protected override void OnTick()
 		{
-			if (Context.Runner != null)
+			if (ApplicationSettings.IsBatchServer == false && Context.Runner != null && Context.Runner.HasVisibilityEnabled() == true)
 			{
-				Context.Runner.IsVisible = Context.IsVisible;
+				Context.Runner.SetVisible(Context.IsVisible);
 			}
 
 			base.OnTick();

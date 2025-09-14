@@ -131,7 +131,7 @@
 		{
 			if (useDepth)
 			{
-				_commandBuffer.SetRenderTarget(OutlineConstants.MaskTex, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, _renderer.cameraDepthTarget, RenderBufferLoadAction.Load, RenderBufferStoreAction.DontCare);
+				_commandBuffer.SetRenderTarget(OutlineConstants.MaskTex, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, _renderer.cameraDepthTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.DontCare);
 			}
 			else
 			{
@@ -177,7 +177,7 @@
 			_commandBuffer.SetRenderTarget(OutlineConstants.TempTex, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
 			Blit(OutlineConstants.MaskTex, OutlineConstants.OutlineShaderHPassId, _feature.Resources.OutlineMaterial, _materialProperties);
 
-			_commandBuffer.SetRenderTarget(_renderer.cameraColorTarget, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store);
+			_commandBuffer.SetRenderTarget(_renderer.cameraColorTargetHandle, RenderBufferLoadAction.Load, RenderBufferStoreAction.Store);
 			Blit(OutlineConstants.TempTex, OutlineConstants.OutlineShaderVPassId, _feature.Resources.OutlineMaterial, _materialProperties);
 		}
 

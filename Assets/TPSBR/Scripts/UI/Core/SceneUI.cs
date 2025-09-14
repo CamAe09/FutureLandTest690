@@ -286,6 +286,8 @@ namespace TPSBR.UI
 
 		protected override void OnActivate()
 		{
+			if (ApplicationSettings.IsBatchServer == true)
+				return;
 			if (ApplicationSettings.IsStrippedBatch == true)
 			{
 				Canvas.enabled = false;
@@ -304,6 +306,8 @@ namespace TPSBR.UI
 
 		protected override void OnDeactivate()
 		{
+			if (ApplicationSettings.IsBatchServer == true)
+				return;
 			if (ApplicationSettings.IsStrippedBatch == true)
 				return;
 
@@ -322,6 +326,8 @@ namespace TPSBR.UI
 
 		protected override sealed void OnTick()
 		{
+			if (ApplicationSettings.IsBatchServer == true)
+				return;
 			if (ApplicationSettings.IsStrippedBatch == true)
 				return;
 

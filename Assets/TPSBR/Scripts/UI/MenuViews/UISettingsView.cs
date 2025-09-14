@@ -220,13 +220,13 @@ namespace TPSBR.UI
 			_validResolutions.Clear();
 			var resolutions = Screen.resolutions;
 
-			int defaultRefreshRate = resolutions[^1].refreshRate;
+			int defaultRefreshRate = Mathf.RoundToInt((float)resolutions[^1].refreshRateRatio.value);
 
 			// Add resolutions in reversed order
 			for (int i = resolutions.Length - 1; i >= 0; i--)
 			{
 				var resolution = resolutions[i];
-				if (resolution.refreshRate != defaultRefreshRate)
+				if (Mathf.RoundToInt((float)resolution.refreshRateRatio.value) != defaultRefreshRate)
 					continue;
 
 				_validResolutions.Add(new ResolutionData(i, resolution));

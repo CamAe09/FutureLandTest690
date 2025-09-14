@@ -67,13 +67,13 @@ namespace TPSBR
 
 			int currentWidth = Mathf.RoundToInt(Screen.width);
 			int currentHeight = Mathf.RoundToInt(Screen.height);
-			int defaultRefreshRate = resolutions[^1].refreshRate;
+			int defaultRefreshRate = Mathf.RoundToInt((float)resolutions[^1].refreshRateRatio.value);
 
 			for (int i = 0; i < resolutions.Length; i++)
 			{
 				var resolution = resolutions[i];
 
-				if (resolution.width == currentWidth && resolution.height == currentHeight && resolution.refreshRate == defaultRefreshRate)
+				if (resolution.width == currentWidth && resolution.height == currentHeight && Mathf.RoundToInt((float)resolution.refreshRateRatio.value) == defaultRefreshRate)
 					return i;
 			}
 

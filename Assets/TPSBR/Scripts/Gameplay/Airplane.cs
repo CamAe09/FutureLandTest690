@@ -1,10 +1,10 @@
-using Fusion;
-using Fusion.KCC;
 using UnityEngine;
+using Fusion;
+using Fusion.Addons.KCC;
 
 namespace TPSBR
 {
-	public class Airplane : ContextBehaviour
+	public sealed class Airplane : ContextBehaviour
 	{
 		// PUBLIC MEMBERS
 
@@ -59,7 +59,7 @@ namespace TPSBR
 
 		public void ActivateDropWindow()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			DropEnabled = true;
@@ -68,7 +68,7 @@ namespace TPSBR
 
 		public void DeactivateDropWindow()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			DropEnabled = false;
@@ -85,7 +85,7 @@ namespace TPSBR
 
 		public override void Spawned()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			_velocity = transform.rotation * (Vector3.forward * _maxSpeed);
@@ -93,7 +93,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (IsFinished == true)

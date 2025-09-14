@@ -156,7 +156,7 @@ namespace TPSBR.UI
 			_effects.UpdateEffects(_localAgent);
 			_weapons.UpdateWeapons(_localAgent.Weapons, _localAgent.AgentInput);
 			_crosshair.UpdateCrosshair(_localAgent);
-			_interactions.UpdateInteractions(Context, _localAgent.Weapons);
+			_interactions.UpdateInteractions(Context, _localAgent);
 			_jetpack.UpdateJetpack(_localAgent.Jetpack);
 		}
 
@@ -267,7 +267,7 @@ namespace TPSBR.UI
 				_localAgent.Health.HitPerformed -= OnHitPerformed;
 				_localAgent.Health.HitTaken -= OnHitTaken;
 
-				_localAgent.Weapons.InteractionFailed -= OnInteractionFailed;
+				_localAgent.Interactions.InteractionFailed -= OnInteractionFailed;
 			}
 
 			_localAgent   = agent;
@@ -290,7 +290,7 @@ namespace TPSBR.UI
 
 			agent.Health.HitPerformed += OnHitPerformed;
 			agent.Health.HitTaken += OnHitTaken;
-			agent.Weapons.InteractionFailed += OnInteractionFailed;
+			agent.Interactions.InteractionFailed += OnInteractionFailed;
 		}
 
 		private void ClearLocalAgent()
@@ -307,7 +307,7 @@ namespace TPSBR.UI
 			{
 				_localAgent.Health.HitPerformed -= OnHitPerformed;
 				_localAgent.Health.HitTaken -= OnHitTaken;
-				_localAgent.Weapons.InteractionFailed -= OnInteractionFailed;
+				_localAgent.Interactions.InteractionFailed -= OnInteractionFailed;
 
 				_localAgent   = null;
 				_localAgentId = default;

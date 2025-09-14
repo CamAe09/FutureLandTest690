@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TPSBR
 {
-	public class Smoke : NetworkBehaviour
+	public sealed class Smoke : NetworkBehaviour
 	{
 		// PRIVATE MEMBERS
 
@@ -33,7 +33,7 @@ namespace TPSBR
 
 		public override void Spawned()
 		{
-			if (Object.HasStateAuthority == true)
+			if (HasStateAuthority == true)
 			{
 				_timer = TickTimer.CreateFromSeconds(Runner, _duration);
 				_finished = false;
@@ -42,7 +42,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (_timer.Expired(Runner) == true)

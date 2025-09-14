@@ -1,9 +1,9 @@
-using Fusion;
 using UnityEngine;
+using Fusion;
 
 namespace TPSBR
 {
-	public class ShrinkingArea : ContextBehaviour
+	public sealed class ShrinkingArea : ContextBehaviour
 	{
 		// PUBLIC MEMBERS
 
@@ -90,7 +90,7 @@ namespace TPSBR
 		{
 			if (IsActive == true)
 				return;
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			IsActive = true;
@@ -114,7 +114,7 @@ namespace TPSBR
 		{
 			if (IsActive == false)
 				return;
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			IsActive = false;
@@ -145,7 +145,7 @@ namespace TPSBR
 
 		public bool SetEndCenter(Vector2 endCenter, bool force = false)
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return false;
 
 			var position = new Vector2(transform.position.x, transform.position.z);
@@ -170,7 +170,7 @@ namespace TPSBR
 			if (IsActive == false || IsPaused == true)
 				return;
 
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (IsPaused == false)
@@ -233,14 +233,14 @@ namespace TPSBR
 
 		// MONOBEHAVIOUR
 
-		protected void Start()
+		private void Start()
 		{
 			_shrinkAreaMaterial = _shrinkArea.GetComponentInChildren<MeshRenderer>(true).material;
 			_shrinkAreaTargetMaterial = _shrinkAreaTarget.GetComponentInChildren<MeshRenderer>(true).material;
 			_materialRadiusID = Shader.PropertyToID("Radius");
 		}
 
-		protected void OnDrawGizmosSelected()
+		private void OnDrawGizmosSelected()
 		{
 			var tmpColor = Gizmos.color;
 
@@ -259,7 +259,7 @@ namespace TPSBR
 		{
 			if (IsActive == false || IsAnnounced == true)
 				return;
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 			if (IsFinished == true)
 				return;
@@ -279,12 +279,12 @@ namespace TPSBR
 		{
 			if (IsActive == false || IsShrinking == true)
 				return;
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 			if (IsFinished == true)
 				return;
 
-			_shrinkStartTick = Runner.Simulation.Tick;
+			_shrinkStartTick = Runner.Tick;
 			_shrinkEndTick   = _shrinkStartTick + Mathf.CeilToInt(_shrinkDuration / Runner.DeltaTime);
 
 			IsShrinking    = true;
@@ -293,7 +293,7 @@ namespace TPSBR
 
 		private void UpdateShrinking()
 		{
-			var currentTick = Runner.Simulation.Tick;
+			var currentTick = Runner.Tick;
 
 			if (currentTick >= _shrinkEndTick)
 			{
@@ -321,7 +321,7 @@ namespace TPSBR
 		{
 			var radiusSqr = Radius * Radius;
 
-			foreach (var player in Context.NetworkGame.Players)
+			foreach (var player in Context.NetworkGame.ActivePlayers)
 			{
 				if (player == null)
 					continue;
@@ -355,7 +355,7 @@ namespace TPSBR
 
 		private void SetNextShrinkingTimer(float additionalTime = 0f)
 		{
-			int playerCount = Context.NetworkGame.GetActivePlayerCount();
+			int playerCount = Context.NetworkGame.ActivePlayerCount;
 			ShrinkDelay = MathUtility.Map(_minShrinkDelayPlayers, _maxShrinkDelayPlayers, _minShrinkDelay, _maxShrinkDelay, playerCount);
 
 			ShrinkDelay += additionalTime;

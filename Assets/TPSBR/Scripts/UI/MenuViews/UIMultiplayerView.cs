@@ -134,7 +134,7 @@ namespace TPSBR.UI
 
 		private void TryJoinLobby(bool force)
 		{
-			if (PhotonAppSettings.Instance.AppSettings.AppIdFusion.HasValue() == true)
+			if (PhotonAppSettings.Global.AppSettings.AppIdFusion.HasValue() == true)
 			{
 				Context.Matchmaking.JoinLobby(force);
 			}
@@ -143,13 +143,13 @@ namespace TPSBR.UI
 				var errorDialog = Open<UIErrorDialogView>();
 
 				errorDialog.Title.text = "Missing App Id";
-				errorDialog.Description.text = "Fusion App Id is not assigned in the Photon App Settings asset.\n\nPlease follow instructions in the Fusion BR documentation on how to create and assign App Id.";
+				errorDialog.Description.text = "Fusion App Id is not assigned in the Photon App Settings asset.\n\nPlease follow instructions in the Fusion BR200 documentation on how to create and assign App Id.";
 
 				errorDialog.HasClosed += () =>
 				{
 				#if UNITY_EDITOR
-					UnityEditor.Selection.activeObject = PhotonAppSettings.Instance;
-					UnityEditor.EditorGUIUtility.PingObject(PhotonAppSettings.Instance);
+					UnityEditor.Selection.activeObject = PhotonAppSettings.Global;
+					UnityEditor.EditorGUIUtility.PingObject(PhotonAppSettings.Global);
 				#endif
 
 					Close();
@@ -242,7 +242,7 @@ namespace TPSBR.UI
 				var infoDialog = Open<UIInfoDialogView>();
 
 				infoDialog.Title.text = "Unity Gaming Services";
-				infoDialog.Description.text = "For matchmaking functionality Unity Gaming Services need to be configured.\n\nPlease follow instructions in the Fusion BR documentation on how to add Multiplay support.";
+				infoDialog.Description.text = "For matchmaking functionality Unity Gaming Services need to be configured.\n\nPlease follow instructions in the Fusion BR200 documentation on how to add Unity Game Server Hosting support.";
 			}
 		}
 
@@ -340,7 +340,10 @@ namespace TPSBR.UI
 			for (int i = 0; i < regions.Length; i++)
 			{
 				var regionInfo = regions[i];
-				options.Add(new TMP_Dropdown.OptionData(regionInfo.DisplayName, regionInfo.Icon));
+				var optionData = new TMP_Dropdown.OptionData();
+				optionData.text = regionInfo.DisplayName;
+				optionData.image = regionInfo.Icon;
+				options.Add(optionData);
 			}
 
 			_regionDropdown.ClearOptions();

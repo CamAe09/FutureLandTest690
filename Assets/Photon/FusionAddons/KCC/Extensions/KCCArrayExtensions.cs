@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 	using System.Runtime.CompilerServices;

@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using UnityEngine;
 
@@ -21,6 +21,10 @@ namespace Fusion.KCC
 
 		// CONSTRUCTORS
 
+		public KCCOverlapInfo() : this(KCC.CACHE_SIZE)
+		{
+		}
+
 		public KCCOverlapInfo(int maxHits)
 		{
 			AllHits      = new KCCOverlapHit[maxHits];
@@ -34,6 +38,54 @@ namespace Fusion.KCC
 		}
 
 		// PUBLIC METHODS
+
+		public bool HasCollider(Collider collider)
+		{
+			for (int i = 0, count = AllHitCount; i < count; ++i)
+			{
+				KCCOverlapHit hit = AllHits[i];
+				if (object.ReferenceEquals(hit.Collider, collider) == true)
+					return true;
+			}
+
+			return false;
+		}
+
+		public bool HasCollider(EColliderType colliderType)
+		{
+			for (int i = 0, count = AllHitCount; i < count; ++i)
+			{
+				KCCOverlapHit hit = AllHits[i];
+				if (hit.Type == colliderType)
+					return true;
+			}
+
+			return false;
+		}
+
+		public bool HasColliderWithinExtent(Collider collider)
+		{
+			for (int i = 0, count = AllHitCount; i < count; ++i)
+			{
+				KCCOverlapHit hit = AllHits[i];
+				if (object.ReferenceEquals(hit.Collider, collider) == true && hit.IsWithinExtent == true)
+					return true;
+			}
+
+			return false;
+		}
+
+		public bool HasColliderWithinExtent(EColliderType colliderType)
+		{
+			for (int i = 0, count = AllHitCount; i < count; ++i)
+			{
+				KCCOverlapHit hit = AllHits[i];
+				if (hit.Type == colliderType && hit.IsWithinExtent == true)
+					return true;
+			}
+
+			return false;
+		}
 
 		public void AddHit(Collider collider)
 		{
@@ -73,7 +125,7 @@ namespace Fusion.KCC
 			}
 		}
 
-		public bool AllWithinExtent()
+		public bool AllHitsWithinExtent()
 		{
 			KCCOverlapHit[] hits = AllHits;
 			for (int i = 0, count = AllHitCount; i < count; ++i)
@@ -136,6 +188,21 @@ namespace Fusion.KCC
 					ColliderHits[ColliderHitCount] = hit;
 					++ColliderHitCount;
 				}
+			}
+		}
+
+		public void DumpHits(KCC kcc)
+		{
+			if (AllHitCount <= 0)
+				return;
+
+			kcc.Log($"Overlap Hits ({AllHitCount})");
+
+			KCCOverlapHit[] hits = AllHits;
+			for (int i = 0, count = AllHitCount; i < count; ++i)
+			{
+				KCCOverlapHit hit = AllHits[i];
+				kcc.Log($"Collider: {hit.Collider.name}, Type: {hit.Type}, IsTrigger: {hit.IsTrigger}, IsConvex: {hit.IsConvex}, IsWithinExtent: {hit.IsWithinExtent}, HasPenetration: {hit.HasPenetration}, CollisionType: {hit.CollisionType}");
 			}
 		}
 	}

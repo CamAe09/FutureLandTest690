@@ -51,7 +51,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 			if (_despawnTimer.Expired(Runner) == false)
 				return;
@@ -70,13 +70,13 @@ namespace TPSBR
 
 		private void Explode()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			var position     = transform.position + Vector3.up * 0.5f; // Take position slightly above
 			var flashFalloff = _innerRadius < _outerRadius && _innerFlashValue != _outerFlashValue;
 
-			foreach (var player in Context.NetworkGame.Players)
+			foreach (var player in Context.NetworkGame.ActivePlayers)
 			{
 				if (player == null)
 					continue;

@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1177826213442555717}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7374905818507450736}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1479742883913561489
 GameObject:
@@ -54,13 +54,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1479742883913561489}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7374905818507450736}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3477985123972206804
 GameObject:
@@ -86,13 +86,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3477985123972206804}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.11300534, y: -0.0043490715, z: 0.038210373, w: 0.9928498}
   m_LocalPosition: {x: -0.018, y: 0.0049, z: 0.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7374905818507450736}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &4353281936066937823
 BoxCollider:
@@ -102,9 +102,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3477985123972206804}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 0.1, y: 0.15, z: 0.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5456393775106428515
@@ -130,13 +138,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5456393775106428515}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7374905818507450736}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6541554458687429442
 GameObject:
@@ -164,6 +172,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6541554458687429442}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -175,7 +184,6 @@ Transform:
   - {fileID: 2860234651239405238}
   - {fileID: 1904965457719952285}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5572498687454977085
 MonoBehaviour:
@@ -189,19 +197,14 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 2609528540
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 5070084778634236966}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 13b0c1881e42b7244a39d267e8307c74
+  Flags: 264449
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 5070084778634236966}
   - {fileID: 5660633326291460765}
-  SimulationBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &5070084778634236966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,8 +217,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecff45261f75b014fb16db195df51219, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  _Position: {x: 0, y: 0, z: 0}
+  _stateAuthorityChangeErrorCorrectionDelta: 0.15
+  _positionSource: {fileID: 0}
 --- !u!114 &5660633326291460765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,9 +231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3370d4e8e763aad499d089c376810f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  _IsArmed: 0
-  _Owner: {fileID: 0}
   _weaponID: Weapons.Grenade
   _weaponSlot: 5
   _validOnlyWithAmmo: 1
@@ -287,6 +287,7 @@ MonoBehaviour:
     Clips:
     - {fileID: 8300000, guid: af5ece47ac7f6d741b0b1402c52eac1f, type: 3}
     Volume: 0.2
+    PitchShift: 0
     MaxPitchChange: 0.1
     Delay: 0
     Loop: 0
@@ -299,6 +300,7 @@ MonoBehaviour:
     Clips:
     - {fileID: 8300000, guid: 42321e5846e61c44ba561f9b3d499f70, type: 3}
     Volume: 1
+    PitchShift: 0
     MaxPitchChange: 0
     Delay: 0
     Loop: 0
@@ -311,6 +313,7 @@ MonoBehaviour:
     Clips:
     - {fileID: 8300000, guid: 42321e5846e61c44ba561f9b3d499f70, type: 3}
     Volume: 1
+    PitchShift: 0
     MaxPitchChange: 0
     Delay: 0
     Loop: 0
@@ -322,7 +325,6 @@ MonoBehaviour:
   _fireTransform: {fileID: 3264939406063625526}
   _fireParticlePlayer: {fileID: 0}
   _fireParticleProxy: {fileID: 0}
-  __projectilesCount: 0
   _projectile: {fileID: 5353495761537674037, guid: dc8f4a4de5b7835419045acb2cc8b926, type: 3}
   _projectileSpeed: 35
   _dummyLoadedProjectile: {fileID: 0}
@@ -331,6 +333,7 @@ MonoBehaviour:
     Clips:
     - {fileID: 8300000, guid: fc5b6cb057057e243b92fc5eadf08bb4, type: 3}
     Volume: 1
+    PitchShift: 0
     MaxPitchChange: 0.1
     Delay: 0
     Loop: 0
@@ -364,13 +367,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7469640226385750332}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7374905818507450736}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &341455980733069509
 AudioSource:
@@ -519,6 +522,7 @@ MonoBehaviour:
   _defaultSetup:
     Clips: []
     Volume: 1
+    PitchShift: 0
     MaxPitchChange: 0
     Delay: 0
     Loop: 0

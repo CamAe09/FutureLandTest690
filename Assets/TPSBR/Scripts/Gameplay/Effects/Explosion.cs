@@ -47,7 +47,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 			if (_despawnTimer.Expired(Runner) == false)
 				return;
@@ -59,7 +59,7 @@ namespace TPSBR
 
 		private void Explode()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			var hits = ListPool.Get<LagCompensatedHit>(16);
@@ -112,7 +112,7 @@ namespace TPSBR
 
 				if (owner != null)
 				{
-					HitUtility.ProcessHit(owner, direction, hit, damage, _hitType, out HitData hitData);
+					HitUtility.ProcessHit(owner.Object, direction, hit, damage, _hitType, out HitData hitData);
 				}
 				else
 				{

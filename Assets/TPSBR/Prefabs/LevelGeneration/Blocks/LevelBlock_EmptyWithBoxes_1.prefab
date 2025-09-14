@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2001750270961691133}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.20678501, z: -0, w: 0.97838646}
   m_LocalPosition: {x: 6.55, y: 0, z: 2.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5423918138186371917}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 23.868, z: 0}
 --- !u!114 &4549319137883308799
 MonoBehaviour:
@@ -74,6 +74,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5423918138186371915}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -84,7 +85,6 @@ Transform:
   - {fileID: 2093990457819858507}
   - {fileID: 563722721062786839}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5423918138186371918
 MonoBehaviour:
@@ -1604,6 +1604,7 @@ MonoBehaviour:
     RefIds:
     - rid: 0
       type: {class: Cube, ns: UnityEngine.ProBuilder.Shapes, asm: Unity.ProBuilder}
+      data: 
 --- !u!23 &5423918138186371912
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1662,9 +1663,17 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5423918138186371915}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
@@ -1688,6 +1697,8 @@ MonoBehaviour:
   _itemBoxPositions:
   - {fileID: 6496531663283375854}
   - {fileID: 563722721062786839}
+  _interestProviderSpawnPoint: {fileID: 0}
+  _interestProviderPrefab: {fileID: 0}
   _alwaysSpawnBoxes: 0
   _minSpawnedBoxes: 0
   _maxSpawnedBoxes: 1
@@ -1717,13 +1728,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5423918138377301881}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -6.45, y: 0, z: -7.24}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5423918138186371917}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5423918138377301880
 MonoBehaviour:
@@ -1761,13 +1772,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5867224333053491249}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.6322049, z: -0, w: 0.7748013}
   m_LocalPosition: {x: 1.95, y: 0, z: 4.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5423918138186371917}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -78.426, z: 0}
 --- !u!1 &9169139927698961550
 GameObject:
@@ -1792,11 +1803,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9169139927698961550}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.5763091, z: -0, w: 0.81723183}
   m_LocalPosition: {x: -3, y: 0, z: -4.92}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5423918138186371917}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 70.383, z: 0}

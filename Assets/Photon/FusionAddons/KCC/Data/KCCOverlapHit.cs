@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 	using UnityEngine;
@@ -14,9 +14,13 @@ namespace Fusion.KCC
 		public bool           IsTrigger;
 		public bool           IsPrimitive;
 		public bool           IsConvertible;
-		public bool           HasPenetration;
 		public bool           IsWithinExtent;
+		public bool           HasPenetration;
+		public float          MaxPenetration;
+		public float          UpDirectionDot;
 		public ECollisionType CollisionType;
+		public Vector3        CachedPosition; // Used internally for depenetration. Do not use!
+		public Quaternion     CachedRotation; // Used internally for depenetration. Do not use!
 
 		// PRIVATE MEMBERS
 
@@ -89,8 +93,10 @@ namespace Fusion.KCC
 			Collider       = collider;
 			Transform      = collider.transform;
 			IsTrigger      = collider.isTrigger;
-			HasPenetration = default;
 			IsWithinExtent = default;
+			HasPenetration = default;
+			MaxPenetration = default;
+			UpDirectionDot = default;
 			CollisionType  = default;
 
 			return true;
@@ -112,8 +118,10 @@ namespace Fusion.KCC
 			IsTrigger      = other.IsTrigger;
 			IsPrimitive    = other.IsPrimitive;
 			IsConvertible  = other.IsConvertible;
-			HasPenetration = other.HasPenetration;
 			IsWithinExtent = other.IsWithinExtent;
+			HasPenetration = other.HasPenetration;
+			MaxPenetration = other.MaxPenetration;
+			UpDirectionDot = other.UpDirectionDot;
 			CollisionType  = other.CollisionType;
 		}
 	}

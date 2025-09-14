@@ -1,15 +1,17 @@
-using Fusion;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class ColorTag : SimulationBehaviour, ISpawned
+namespace TPSBR
 {
-	public Color ServerColor = Color.green;
-	public Color ClientColor = Color.red;
+	using UnityEngine;
+	using Fusion;
 
-	void ISpawned.Spawned()
+	public class ColorTag : NetworkBehaviour, ISpawned
 	{
-		var r = GetComponent<Renderer>();
-		r.material.color = Runner.Simulation.IsClient ? ClientColor : ServerColor;
+		public Color ServerColor = Color.green;
+		public Color ClientColor = Color.red;
+
+		void ISpawned.Spawned()
+		{
+			var r = GetComponent<Renderer>();
+			r.material.color = Runner.IsClient ? ClientColor : ServerColor;
+		}
 	}
 }

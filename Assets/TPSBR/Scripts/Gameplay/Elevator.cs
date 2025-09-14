@@ -1,73 +1,71 @@
 using System;
-using Fusion;
-using Fusion.KCC;
 using UnityEngine;
+using Fusion;
+using Fusion.Addons.KCC;
 
 namespace TPSBR
 {
+	[DefaultExecutionOrder(-10000)]
 	[RequireComponent(typeof(Rigidbody))]
-	[OrderBefore(typeof(EarlyAgentController), typeof(NetworkTransformAnchor))]
-	public class Elevator : ContextAreaOfInterestBehaviour, IBeforeAllTicks, IKCCProcessor, IKCCProcessorProvider
+	public class Elevator : ContextTRSPBehaviour, IPlatform, IAfterClientPredictionReset, IBeforeAllTicks, IKCCProcessor, IKCCProcessorProvider
 	{
+		// PROTECTED MEMBERS
+
+		[Networked]
+		protected Vector3 _basePosition { get; private set; }
+		[Networked]
+		protected float _currentHeight { get; private set; }
+
 		// PRIVATE MEMBERS
 
 		[SerializeField]
 		private float _height = -5f;
 		[SerializeField]
 		private float _speed = 1f;
-		[SerializeField]
-		private Collider _snapVolume;
-		[SerializeField]
-		private float _spaceTransitionSpeed = 4.0f;
 
-		[Networked, Accuracy(AccuracyDefaults.POSITION)]
-		private Vector3 _position { get; set; }
-		[Networked, Accuracy(AccuracyDefaults.ROTATION)]
-		private Quaternion _rotation { get; set; }
-		[Networked, Accuracy(AccuracyDefaults.POSITION)]
-		private Vector3 _basePosition { get; set; }
-		[Networked]
-		private int _direction { get; set; }
-		[Networked]
-		private float _currentHeight { get; set; }
-		[Networked, Capacity(8)]
-		protected NetworkArray<ElevatorEntity> _entities { get; }
+		private Transform _transform;
+		private Rigidbody _rigidbody;
+		private int       _lastRenderFrame;
+		private int       _syncFrames = 1;
+		private int       _syncOffset;
 
-		private Transform       _transform;
-		private Rigidbody       _rigidbody;
-		private float           _renderTime;
-		private int             _renderDirection;
-		private Vector3         _renderPosition;
-		private RawInterpolator _entitiesInterpolator;
+		private static int _sharedOffset;
 
 		// PUBLIC METHODS
 
 		public void OverrideHeight(float height)
 		{
-			_currentHeight = height;
+			_currentHeight  = height;
 		}
-
-		// NetworkAreaOfInterestBehaviour INTERFACE
-
-		public override int PositionWordOffset => 0;
 
 		// NetworkBehaviour INTERFACE
 
 		public override void Spawned()
 		{
-			if (Object.HasStateAuthority == true)
+			_lastRenderFrame = default;
+
+			if (HasStateAuthority == true)
 			{
-				_position = _transform.position;
-				_rotation = _transform.rotation;
-				_basePosition = _position;
-				_direction = default;
+				_transform.GetPositionAndRotation(out Vector3 position, out Quaternion rotation);
+
+				_basePosition  = position;
 				_currentHeight = _height;
+				_syncFrames    = TickRate.Resolve(Runner.Config.Simulation.TickRateSelection).Server;
+				_syncOffset    = _sharedOffset;
+
+				_sharedOffset++;
+
+				// Set position of NetworkTRSP (compressed).
+				State.Position = position;
+				State.Rotation = rotation;
+			}
+			else
+			{
+				// Read initial values.
+				RestoreTransform();
 			}
 
-			_renderTime           = Runner.SimulationTime;
-			_renderPosition       = _position;
-			_renderDirection      = _direction;
-			_entitiesInterpolator = GetInterpolator(nameof(_entities));
+			Runner.SetIsSimulated(Object, true);
 
 			if (ApplicationSettings.IsStrippedBatch == true)
 			{
@@ -77,58 +75,63 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			CalculateNextPosition(_direction, _position, Runner.DeltaTime, out int nextDirection, out Vector3 positionDelta);
+			Vector3 position = CalculatePosition(Runner.Tick * Runner.DeltaTime);
 
-			_position += positionDelta;
-			_direction = nextDirection;
+			_transform.position = position;
+			_rigidbody.position = position;
 
-			_renderTime      = Runner.SimulationTime;
-			_renderPosition  = _position;
-			_renderDirection = _direction;
-
-			_transform.position = _position;
-			_rigidbody.position = _position;
-
-			if (_entities.Length <= 0)
-				return;
-
-			if (Object.HasStateAuthority == true)
+			if (((Runner.Tick.Raw + _syncOffset) % _syncFrames) == 0 && HasStateAuthority == true)
 			{
-				for (int i = 0; i < _entities.Length; ++i)
-				{
-					ElevatorEntity entity = _entities.Get(i);
-					if (entity.SpaceAlpha > 0.0f)
-					{
-						entity.SpaceAlpha = Mathf.Max(0.0f, entity.SpaceAlpha - Runner.DeltaTime * _spaceTransitionSpeed);
-						if (entity.SpaceAlpha == 0.0f)
-						{
-							entity.Id     = default;
-							entity.Offset = default;
-						}
-
-						_entities.Set(i, entity);
-					}
-				}
+				// Store transform once per second to lower network sync pressure.
+				// Precise position is based on tick - calculated.
+				State.Position = position;
 			}
-
-			ApplyPositionDelta(positionDelta);
 		}
 
 		public override void Render()
 		{
-			float renderTime = Runner.SimulationTime + Runner.DeltaTime * Runner.Simulation.StateAlpha;
-			float deltaTime  = renderTime - _renderTime;
+			_lastRenderFrame = Time.frameCount;
 
-			CalculateNextPosition(_renderDirection, _renderPosition, deltaTime, out int nextDirection, out Vector3 positionDelta);
+			Vector3 position = CalculatePosition((Runner.Tick + Runner.LocalAlpha) * Runner.DeltaTime);
 
-			_renderTime      = renderTime;
-			_renderPosition += positionDelta;
-			_renderDirection = nextDirection;
+			_transform.position = position;
+			_rigidbody.position = position;
+		}
 
-			_transform.position = _renderPosition;
-			_rigidbody.position = _renderPosition;
+		// IAfterClientPredictionReset INTERFACE
 
-			ApplyPositionDelta(positionDelta);
+		void IAfterClientPredictionReset.AfterClientPredictionReset()
+		{
+			RestoreTransform();
+		}
+
+		// IBeforeAllTicks INTERFACE
+
+		void IBeforeAllTicks.BeforeAllTicks(bool resimulation, int tickCount)
+		{
+			// Skip resimulation, the state is already restored from AfterClientPredictionReset().
+			if (resimulation == true)
+				return;
+
+			// Restore state only if a render update was executed previous frame.
+			// Otherwise we continue with state from previous fixed tick or the state is already restored from AfterClientPredictionReset().
+			int previousFrame = Time.frameCount - 1;
+			if (previousFrame != _lastRenderFrame)
+				return;
+
+			RestoreTransform();
+		}
+
+		// IKCCInteractionProvider INTERFACE
+
+		bool IKCCInteractionProvider.CanStartInteraction(KCC kcc, KCCData data) => true;
+		bool IKCCInteractionProvider.CanStopInteraction (KCC kcc, KCCData data) => true;
+
+		// IKCCProcessorProvider INTERFACE
+
+		IKCCProcessor IKCCProcessorProvider.GetProcessor()
+		{
+			return this;
 		}
 
 		// MonoBehaviour INTERFACE
@@ -147,183 +150,33 @@ namespace TPSBR
 			_rigidbody.constraints   = RigidbodyConstraints.FreezeAll;
 		}
 
-		// IBeforeAllTicks INTERFACE
-
-		void IBeforeAllTicks.BeforeAllTicks(bool resimulation, int tickCount)
-		{
-			if (resimulation == true)
-			{
-				_transform.SetPositionAndRotation(_position, _rotation);
-			}
-		}
-
-		// IKCCProcessor INTERFACE
-
-		float IKCCProcessor.Priority => float.MaxValue;
-
-		EKCCStages IKCCProcessor.GetValidStages(KCC kcc, KCCData data)
-		{
-			return EKCCStages.SetInputProperties | EKCCStages.OnStay | EKCCStages.OnInterpolate;
-		}
-
-		void IKCCProcessor.SetInputProperties(KCC kcc, KCCData data)
-		{
-			kcc.SuppressFeature(EKCCFeature.PredictionCorrection);
-		}
-
-		void IKCCProcessor.SetDynamicVelocity(KCC kcc, KCCData data) {}
-		void IKCCProcessor.SetKinematicDirection(KCC kcc, KCCData data) {}
-		void IKCCProcessor.SetKinematicTangent(KCC kcc, KCCData data) {}
-		void IKCCProcessor.SetKinematicSpeed(KCC kcc, KCCData data) {}
-		void IKCCProcessor.SetKinematicVelocity(KCC kcc, KCCData data) {}
-		void IKCCProcessor.ProcessPhysicsQuery(KCC kcc, KCCData data) {}
-		void IKCCProcessor.OnEnter(KCC kcc, KCCData data) {}
-		void IKCCProcessor.OnExit(KCC kcc, KCCData data) {}
-
-		void IKCCProcessor.OnStay(KCC kcc, KCCData data)
-		{
-			if (kcc.IsInFixedUpdate == true && Object.HasStateAuthority == true && _snapVolume.ClosestPoint(data.TargetPosition).AlmostEquals(data.TargetPosition) == true)
-			{
-				for (int i = 0; i < _entities.Length; ++i)
-				{
-					ElevatorEntity entity = _entities.Get(i);
-					if (entity.Id == kcc.Object.Id)
-					{
-						entity.Offset     = data.TargetPosition - _position;
-						entity.SpaceAlpha = Mathf.Min(entity.SpaceAlpha + Runner.DeltaTime * _spaceTransitionSpeed * 2.0f, 1.0f);
-
-						_entities.Set(i, entity);
-
-						return;
-					}
-				}
-
-				for (int i = 0; i < _entities.Length; ++i)
-				{
-					ElevatorEntity entity = _entities.Get(i);
-					if (entity.Id == default)
-					{
-						entity.Id         = kcc.Object.Id;
-						entity.Offset     = data.TargetPosition - _position;
-						entity.SpaceAlpha = Runner.DeltaTime * _spaceTransitionSpeed + 0.001f;
-
-						_entities.Set(i, entity);
-
-						return;
-					}
-				}
-			}
-		}
-
-		void IKCCProcessor.OnInterpolate(KCC kcc, KCCData data)
-		{
-			for (int i = 0; i < _entities.Length; ++i)
-			{
-				ElevatorEntity entity = _entities.Get(i);
-				if (entity.Id == kcc.Object.Id)
-				{
-					if (_entitiesInterpolator.TryGetArray(_entities, out NetworkArray<ElevatorEntity> from, out NetworkArray<ElevatorEntity> to, out float alpha) == true)
-					{
-						ElevatorEntity fromEntity = from.Get(i);
-						ElevatorEntity toEntity   = to.Get(i);
-
-						Vector3 interpolatedOffset     = Vector3.Lerp(fromEntity.Offset, toEntity.Offset, alpha);
-						float   interpolatedSpaceAlpha = Mathf.Lerp(fromEntity.SpaceAlpha, toEntity.SpaceAlpha, alpha);
-
-						data.TargetPosition = Vector3.Lerp(data.TargetPosition, _transform.position + interpolatedOffset, interpolatedSpaceAlpha);
-					}
-
-					break;
-				}
-			}
-		}
-
-		void IKCCProcessor.ProcessUserLogic(KCC kcc, KCCData data, object userData)
-		{
-		}
-
-		// IKCCInteractionProvider INTERFACE
-
-		bool IKCCInteractionProvider.CanStartInteraction(KCC kcc, KCCData data) => true;
-		bool IKCCInteractionProvider.CanStopInteraction (KCC kcc, KCCData data) => true;
-
-		// IKCCProcessorProvider INTERFACE
-
-		IKCCProcessor IKCCProcessorProvider.GetProcessor()
-		{
-			return this;
-		}
-
 		// PRIVATE METHODS
 
-		private void CalculateNextPosition(int baseDirection, Vector3 basePosition, float deltaTime, out int nextDirection, out Vector3 positionDelta)
+		private void RestoreTransform()
 		{
-			nextDirection = baseDirection;
-			positionDelta = default;
+			Vector3 position = CalculatePosition(Runner.Tick * Runner.DeltaTime);
 
-			float remainingDistance = _speed * deltaTime;
-			while (remainingDistance > 0.0f)
-			{
-				Vector3 targetPosition = nextDirection == 0 ? _basePosition + Vector3.up * _currentHeight : _basePosition;
-				Vector3 targetDelta    = targetPosition - basePosition;
-
-				if (targetDelta.sqrMagnitude >= (remainingDistance * remainingDistance))
-				{
-					positionDelta += targetDelta.normalized * remainingDistance;
-					break;
-				}
-				else
-				{
-					basePosition  += targetDelta;
-					positionDelta += targetDelta;
-
-					remainingDistance -= targetDelta.magnitude;
-
-					nextDirection = 1 - nextDirection;
-				}
-			}
+			_transform.SetPositionAndRotation(position, State.Rotation);
+			_rigidbody.position = position;
 		}
 
-		private void ApplyPositionDelta(Vector3 positionDelta)
+		private Vector3 CalculatePosition(float time)
 		{
-			for (int i = 0; i < _entities.Length; ++i)
+			Vector3 position = _basePosition;
+
+			float absoluteHeight = Mathf.Abs(_currentHeight);
+			if (absoluteHeight <= 0.0f)
+				return _basePosition;
+
+			float totalDistance = _speed * time;
+			float distanceAlpha = (totalDistance % (absoluteHeight * 2.0f)) / absoluteHeight; // 0.0f - 2.0f
+
+			if (distanceAlpha > 1.0f)
 			{
-				ElevatorEntity entity = _entities.Get(i);
-				if (entity.Id.IsValid == true)
-				{
-					NetworkObject networkObject = Runner.FindObject(entity.Id);
-					if (networkObject != null)
-					{
-						KCC kcc = networkObject.GetComponent<KCC>();
-						if (kcc.IsProxy == true)
-						{
-							kcc.Interpolate();
-							continue;
-						}
-
-						KCCData kccData        = kcc.Data;
-						Vector3 targetPosition = kccData.TargetPosition + positionDelta;
-
-						if (_snapVolume.ClosestPoint(targetPosition).AlmostEquals(targetPosition) == true)
-						{
-							kccData.BasePosition    += positionDelta;
-							kccData.DesiredPosition += positionDelta;
-							kccData.TargetPosition  += positionDelta;
-
-							kcc.SynchronizeTransform(true, false);
-						}
-					}
-				}
+				distanceAlpha = 2.0f - distanceAlpha; // 0.0f - 1.0f
 			}
-		}
 
-		// DATA STRUCTURES
-
-		protected struct ElevatorEntity : INetworkStruct
-		{
-			public NetworkId Id;
-			public Vector3   Offset;
-			public float     SpaceAlpha;
+			return _basePosition + Vector3.up * distanceAlpha * _currentHeight;
 		}
 	}
 }

@@ -76,7 +76,7 @@ namespace TPSBR
 			UseSQP            = ApplicationUtility.HasCommandLineArgument("-sqp");
 			HasQueueName      = ApplicationUtility.GetCommandLineArgument("-queueName", out QueueName);
 			IsModerator       = Application.isEditor == true || ApplicationUtility.HasCommandLineArgument("-moderator");
-			IsPublicBuild     = PhotonAppSettings.Instance.AppSettings.AppVersion.ToLowerInvariant().Contains("-public");
+			IsPublicBuild     = PhotonAppSettings.Global.AppSettings.AppVersion.ToLowerInvariant().Contains("-public");
 			IsBatchServer     = Application.isBatchMode == true && IsServer == true;
 			IsStrippedBatch   = Application.isBatchMode == true && ApplicationUtility.HasCommandLineArgument("-stripped") && IsClient == true;
 			RecordSession     = ApplicationUtility.HasCommandLineArgument("-recordSession");

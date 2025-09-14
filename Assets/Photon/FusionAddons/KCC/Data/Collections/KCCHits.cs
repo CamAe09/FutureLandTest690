@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Collections.Generic;
 	using UnityEngine;
@@ -21,22 +21,6 @@ namespace Fusion.KCC
 		/// Non-penetrating collisions within (radius + extent) have ECollisionType.None.
 		/// </summary>
 		public ECollisionType CollisionType;
-
-		// PUBLIC METHODS
-
-		public void CopyFromOther(KCCHit other)
-		{
-			Collider      = other.Collider;
-			Transform     = other.Transform;
-			CollisionType = other.CollisionType;
-		}
-
-		public void Clear()
-		{
-			Collider      = default;
-			Transform     = default;
-			CollisionType = default;
-		}
 	}
 
 	/// <summary>
@@ -52,7 +36,7 @@ namespace Fusion.KCC
 
 		// PRIVATE MEMBERS
 
-		private Stack<KCCHit> _pool = new Stack<KCCHit>();
+		private static readonly KCCFastStack<KCCHit> _pool = new KCCFastStack<KCCHit>(256, true);
 
 		// PUBLIC METHODS
 
@@ -63,7 +47,7 @@ namespace Fusion.KCC
 
 		public KCCHit Add(KCCOverlapHit overlapHit)
 		{
-			KCCHit hit = GetFromPool();
+			KCCHit hit = _pool.PopOrCreate();
 			hit.Collider      = overlapHit.Collider;
 			hit.Transform     = overlapHit.Transform;
 			hit.CollisionType = overlapHit.CollisionType;
@@ -75,39 +59,56 @@ namespace Fusion.KCC
 
 		public void CopyFromOther(KCCHits other)
 		{
-			if (All.Count == other.All.Count)
+			KCCHit thisHit;
+			KCCHit otherHit;
+			int    thisCount  = All.Count;
+			int    otherCount = other.All.Count;
+
+			if (thisCount == otherCount)
 			{
-				for (int i = 0, count = All.Count; i < count; ++i)
+				if (thisCount == 0)
+					return;
+
+				for (int i = 0; i < thisCount; ++i)
 				{
-					All[i].CopyFromOther(other.All[i]);
+					thisHit  = All[i];
+					otherHit = other.All[i];
+
+					thisHit.Collider      = otherHit.Collider;
+					thisHit.Transform     = otherHit.Transform;
+					thisHit.CollisionType = otherHit.CollisionType;
 				}
 			}
 			else
 			{
-				Clear(false);
+				Clear();
 
-				for (int i = 0, count = other.All.Count; i < count; ++i)
+				for (int i = 0; i < otherCount; ++i)
 				{
-					KCCHit hit = GetFromPool();
-					hit.CopyFromOther(other.All[i]);
-					All.Add(hit);
+					thisHit  = _pool.PopOrCreate();
+					otherHit = other.All[i];
+
+					thisHit.Collider      = otherHit.Collider;
+					thisHit.Transform     = otherHit.Transform;
+					thisHit.CollisionType = otherHit.CollisionType;
+
+					All.Add(thisHit);
 				}
 			}
 		}
 
-		public void Clear(bool clearPool)
+		public void Clear()
 		{
 			for (int i = 0, count = All.Count; i < count; ++i)
 			{
-				ReturnToPool(All[i]);
+				KCCHit hit = All[i];
+				hit.Collider      = default;
+				hit.Transform     = default;
+				hit.CollisionType = default;
+				_pool.Push(hit);
 			}
 
 			All.Clear();
-
-			if (clearPool == true)
-			{
-				_pool.Clear();
-			}
 		}
 
 		// PRIVATE METHODS
@@ -126,17 +127,6 @@ namespace Fusion.KCC
 
 			index = -1;
 			return default;
-		}
-
-		private KCCHit GetFromPool()
-		{
-			return _pool.Count > 0 ? _pool.Pop() : new KCCHit();
-		}
-
-		private void ReturnToPool(KCCHit hit)
-		{
-			hit.Clear();
-			_pool.Push(hit);
 		}
 	}
 }

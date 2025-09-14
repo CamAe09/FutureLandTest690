@@ -1,11 +1,12 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using UnityEngine;
 
 	/// <summary>
-	/// Custom wrapper for fast property checks and synchronization. Don't touch.
+	/// Custom wrapper/cache for fast property checks and synchronization.
+	/// Direct changes on the Collider component or the Game Object won't propagate here.
 	/// </summary>
-	public sealed class KCCCollider
+	public sealed partial class KCCCollider
 	{
 		// PUBLIC MEMBERS
 
@@ -20,8 +21,10 @@ namespace Fusion.KCC
 
 		// PUBLIC METHODS
 
-		public void Update(Transform parent, KCCSettings settings)
+		public void Update(KCC kcc)
 		{
+			KCCSettings settings = kcc.Settings;
+
 			if (IsSpawned == false)
 			{
 				IsTrigger = settings.IsTrigger;
@@ -33,7 +36,7 @@ namespace Fusion.KCC
 				GameObject.layer = settings.ColliderLayer;
 
 				Transform = GameObject.transform;
-				Transform.SetParent(parent, false);
+				Transform.SetParent(kcc.Transform, false);
 				Transform.localPosition = Vector3.zero;
 				Transform.localRotation = Quaternion.identity;
 				Transform.localScale    = Vector3.one;
@@ -72,6 +75,8 @@ namespace Fusion.KCC
 				Layer = settings.ColliderLayer;
 				GameObject.layer = settings.ColliderLayer;
 			}
+
+			OnUpdate(kcc);
 		}
 
 		public void Destroy()
@@ -94,6 +99,13 @@ namespace Fusion.KCC
 			Radius     = default;
 			Height     = default;
 			Layer      = default;
+
+			OnDestroy();
 		}
+
+		// PARTIAL METHODS
+
+		partial void OnUpdate(KCC kcc);
+		partial void OnDestroy();
 	}
 }

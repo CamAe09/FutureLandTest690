@@ -29,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -45,18 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SortKey: 694183944
   ObjectInterest: 0
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: -7249668425509915431}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 9d631177f90b9ba49bc00a53b3478fa2
+  Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -7249668425509915431}
-  SimulationBehaviours: []
 --- !u!54 &293761205225825258
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -85,41 +80,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7684f04e649e84fb2ee1bc9fbee42d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 3
   _settings:
     Shape: 1
     IsTrigger: 0
     Radius: 0.35
     Height: 1.8
     Extent: 0.035
-    Mass: 1
     ColliderLayer: 0
     CollisionLayerMask:
       serializedVersion: 2
       m_Bits: 1
-    RenderBehavior: 1
     Features: -1
-    SuppressConvexMeshColliders: 0
-    SpawnColliderOnProxy: 1
+    InputAuthorityBehavior: 0
+    StateAuthorityBehavior: 0
+    ProxyInterpolationMode: 0
+    ForcePredictedLookRotation: 0
     AllowClientTeleports: 0
-    TeleportThreshold: 1
-    CCDRadiusMultiplier: 0.75
-    AntiJitterDistance: {x: 0, y: 0}
-    GroundSnapDistance: 0.25
-    GroundSnapSpeed: 4
-    StepHeight: 0.3
-    StepSpeed: 1
     Processors:
-    - {fileID: 6733955975318150615, guid: 0b1fae6ab34a6e0478cb92d6e1a62e44, type: 3}
-    - {fileID: -3592675505127058418, guid: 93e6d39666b21fe4ea884554d8526c00, type: 3}
-    PositionAccuracy:
-      _value: 0.0001
-      _inverse: 0
-      _hash: -194233199
-    RotationAccuracy:
-      _value: 0.0001
-      _inverse: 0
-      _hash: -258202764
-    MaxNetworkedCollisions: 4
-    MaxNetworkedModifiers: 4
-    MaxNetworkedIgnores: 4
+    - {fileID: 4219866145273439913, guid: 1ab62523487a65745ab7ee9663ad9025, type: 3}
+    - {fileID: 561824206424634091, guid: 68c4081a63f1dfd469da9c95bea22158, type: 3}
+    - {fileID: 8306782452827789390, guid: 6d976f9777012db4aa55e7e6b1991afe, type: 3}
+    MaxPenetrationSteps: 8
+    CCDRadiusMultiplier: 0.75
+    AntiJitterDistance: {x: 0.025, y: 0.01}
+    PredictionCorrectionSpeed: 30
+    NetworkedInteractions: 8
+    CompressNetworkPosition: 0
+    ForceSingleOverlapQuery: 0
+    SuppressConvexMeshColliders: 0

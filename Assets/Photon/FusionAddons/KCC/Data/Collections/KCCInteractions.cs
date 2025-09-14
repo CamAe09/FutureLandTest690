@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Collections.Generic;
 
@@ -15,41 +15,9 @@ namespace Fusion.KCC
 
 		// KCCInteraction<TInteraction> INTERFACE
 
-		protected abstract void OnInitialize();
-		protected abstract void OnDeinitialize();
-		protected abstract void OnCopyFromOther(TInteraction other);
-
-		// PUBLIC METHODS
-
-		public void Initialize(KCCNetworkID networkID, NetworkObject networkObject, IKCCInteractionProvider provider, bool initializeDeep)
-		{
-			NetworkID     = networkID;
-			NetworkObject = networkObject;
-			Provider      = provider;
-
-			if (initializeDeep == true)
-			{
-				OnInitialize();
-			}
-		}
-
-		public void Deinitialize()
-		{
-			OnDeinitialize();
-
-			NetworkID     = default;
-			NetworkObject = default;
-			Provider      = default;
-		}
-
-		public void CopyFromOther(TInteraction other)
-		{
-			NetworkID     = other.NetworkID;
-			NetworkObject = other.NetworkObject;
-			Provider      = other.Provider;
-
-			OnCopyFromOther(other);
-		}
+		public abstract void Initialize();
+		public abstract void Deinitialize();
+		public abstract void CopyFromOther(TInteraction other);
 	}
 
 	/// <summary>
@@ -65,7 +33,7 @@ namespace Fusion.KCC
 
 		// PRIVATE MEMBERS
 
-		private Stack<TInteraction> _pool = new Stack<TInteraction>();
+		private static readonly KCCFastStack<TInteraction> _pool = new KCCFastStack<TInteraction>(256, true);
 
 		// PUBLIC METHODS
 
@@ -123,22 +91,27 @@ namespace Fusion.KCC
 			return Find(provider, out int index);
 		}
 
-		public TInteraction Add(NetworkObject networkObject, IKCCInteractionProvider provider)
+		public TInteraction Add(NetworkRunner networkRunner, NetworkObject networkObject, IKCCInteractionProvider provider)
 		{
-			return AddInternal(networkObject, provider, true);
+			return AddInternal(networkRunner, networkObject, provider, true);
 		}
 
-		public void Add(NetworkObject networkObject, KCCNetworkID networkID)
+		public bool Add(NetworkObject networkObject, KCCNetworkID networkID)
 		{
 			if (networkObject == null)
-				return;
+				return false;
 
 			IKCCInteractionProvider provider = networkObject.GetComponentNoAlloc<IKCCInteractionProvider>();
 
-			TInteraction interaction = GetFromPool();
-			interaction.Initialize(networkID, networkObject, provider, true);
+			TInteraction interaction = _pool.PopOrCreate();
+			interaction.NetworkID     = networkID;
+			interaction.NetworkObject = networkObject;
+			interaction.Provider      = provider;
+			interaction.Initialize();
 
 			All.Add(interaction);
+
+			return true;
 		}
 
 		public bool Remove(TInteraction interaction)
@@ -158,27 +131,45 @@ namespace Fusion.KCC
 
 		public void CopyFromOther<T>(T other) where T : KCCInteractions<TInteraction>
 		{
-			if (All.Count == other.All.Count)
+			int thisCount  = All.Count;
+			int otherCount = other.All.Count;
+
+			if (thisCount == otherCount)
 			{
-				for (int i = 0, count = All.Count; i < count; ++i)
+				if (thisCount == 0)
+					return;
+
+				for (int i = 0; i < thisCount; ++i)
 				{
-					All[i].CopyFromOther(other.All[i]);
+					TInteraction interaction      = All[i];
+					TInteraction otherInteraction = other.All[i];
+
+					interaction.NetworkID     = otherInteraction.NetworkID;
+					interaction.NetworkObject = otherInteraction.NetworkObject;
+					interaction.Provider      = otherInteraction.Provider;
+					interaction.CopyFromOther(otherInteraction);
 				}
 			}
 			else
 			{
-				Clear(false);
+				Clear();
 
-				for (int i = 0, count = other.All.Count; i < count; ++i)
+				for (int i = 0; i < otherCount; ++i)
 				{
-					TInteraction interaction = GetFromPool();
-					interaction.CopyFromOther(other.All[i]);
+					TInteraction otherInteraction = other.All[i];
+
+					TInteraction interaction = _pool.PopOrCreate();
+					interaction.NetworkID     = otherInteraction.NetworkID;
+					interaction.NetworkObject = otherInteraction.NetworkObject;
+					interaction.Provider      = otherInteraction.Provider;
+					interaction.CopyFromOther(otherInteraction);
+
 					All.Add(interaction);
 				}
 			}
 		}
 
-		public void Clear(bool clearPool)
+		public void Clear()
 		{
 			for (int i = 0, count = All.Count; i < count; ++i)
 			{
@@ -186,23 +177,39 @@ namespace Fusion.KCC
 			}
 
 			All.Clear();
-
-			if (clearPool == true)
-			{
-				_pool.Clear();
-			}
 		}
 
 		// PROTECTED METHODS
 
-		protected TInteraction AddInternal(NetworkObject networkObject, IKCCInteractionProvider provider, bool initializeDeep)
+		protected TInteraction AddInternal(NetworkRunner networkRunner, NetworkObject networkObject, IKCCInteractionProvider provider, bool invokeInitialize)
 		{
-			TInteraction interaction = GetFromPool();
-			interaction.Initialize(KCCNetworkID.GetNetworkID(networkObject), networkObject, provider, initializeDeep);
+			TInteraction interaction = _pool.PopOrCreate();
+			interaction.NetworkID     = KCCNetworkID.GetNetworkID(networkRunner, networkObject);
+			interaction.NetworkObject = networkObject;
+			interaction.Provider      = provider;
+
+			if (invokeInitialize == true)
+			{
+				interaction.Initialize();
+			}
 
 			All.Add(interaction);
 
 			return interaction;
+		}
+
+		protected void AddInternal(TInteraction interaction, NetworkRunner networkRunner, NetworkObject networkObject, IKCCInteractionProvider provider, bool invokeInitialize)
+		{
+			interaction.NetworkID     = KCCNetworkID.GetNetworkID(networkRunner, networkObject);
+			interaction.NetworkObject = networkObject;
+			interaction.Provider      = provider;
+
+			if (invokeInitialize == true)
+			{
+				interaction.Initialize();
+			}
+
+			All.Add(interaction);
 		}
 
 		protected TInteraction Find(IKCCInteractionProvider provider, out int index)
@@ -221,16 +228,19 @@ namespace Fusion.KCC
 			return default;
 		}
 
-		// PRIVATE METHODS
-
-		private TInteraction GetFromPool()
+		protected static TInteraction GetFromPool()
 		{
-			return _pool.Count > 0 ? _pool.Pop() : new TInteraction();
+			return _pool.PopOrCreate();
 		}
 
-		private void ReturnToPool(TInteraction interaction)
+		// PRIVATE METHODS
+
+		private static void ReturnToPool(TInteraction interaction)
 		{
 			interaction.Deinitialize();
+			interaction.NetworkID     = default;
+			interaction.NetworkObject = default;
+			interaction.Provider      = default;
 			_pool.Push(interaction);
 		}
 	}

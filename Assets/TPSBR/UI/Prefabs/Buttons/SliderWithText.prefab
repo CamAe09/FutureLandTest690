@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3351796527595973076}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -140,6 +139,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 426071763378994524, guid: f40c1a22c4221a44f91b2dbe60696224, type: 3}
@@ -271,6 +271,12 @@ PrefabInstance:
       value: SliderWithText
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5825516986290664321, guid: f40c1a22c4221a44f91b2dbe60696224, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1211762216173325252}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f40c1a22c4221a44f91b2dbe60696224, type: 3}
 --- !u!224 &3351796527595973076 stripped
 RectTransform:

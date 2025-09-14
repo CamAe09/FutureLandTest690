@@ -15,8 +15,14 @@ namespace TPSBR
 
 		// StaticPickup INTERFACE
 
-		protected override bool Consume(Agent agent, out string result)
+		protected override bool Consume(GameObject instigator, out string result)
 		{
+			if (instigator.TryGetComponent(out Weapons weapons) == false)
+			{
+				result = "Not applicable";
+				return false;
+			}
+
 			result = string.Empty;
 			return true;
 		}

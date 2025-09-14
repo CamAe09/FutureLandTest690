@@ -5,6 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5755390189370465098}
     m_Modifications:
     - target: {fileID: 1970503046908350, guid: 3b50f2b95c26a434092f9951da0cced0, type: 3}
@@ -57,12 +58,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 95225756638517612, guid: 3b50f2b95c26a434092f9951da0cced0, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b50f2b95c26a434092f9951da0cced0, type: 3}
+--- !u!4 &7297609933912426313 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4357967789553266, guid: 3b50f2b95c26a434092f9951da0cced0, type: 3}
+  m_PrefabInstance: {fileID: 7298410981586088251}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7525190211711700476
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1588371349948363617, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
@@ -76,6 +86,10 @@ PrefabInstance:
     - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
       propertyPath: _weaponID
       value: Weapons.Rifle_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
+      propertyPath: _weaponSlot
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
       propertyPath: _displayName
@@ -117,33 +131,13 @@ PrefabInstance:
       propertyPath: _dispersionIncreasePerShot
       value: 0.15
       objectReference: {fileID: 0}
-    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
-      propertyPath: _fireSound.Clips.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
-      propertyPath: _fireSound.Clips.Array.data[0]
-      value: 
-      objectReference: {fileID: 8300000, guid: 66e55276f2576c54da30255a4ee5f707, type: 3}
-    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
-      propertyPath: _fireSound.Clips.Array.data[1]
-      value: 
-      objectReference: {fileID: 8300000, guid: fa50548934648a04885242083eeeee08, type: 3}
-    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
-      propertyPath: _fireSound.Clips.Array.data[2]
-      value: 
-      objectReference: {fileID: 8300000, guid: 8115cf92e6bd3df43a1a650fda131536, type: 3}
-    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
-      propertyPath: _fireSound.Clips.Array.data[3]
-      value: 
-      objectReference: {fileID: 8300000, guid: 1e0435c5fb435de43bfc28da9b033a82, type: 3}
-    - target: {fileID: 2817010484915668333, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
-      propertyPath: _fireSound.Clips.Array.data[4]
-      value: 
-      objectReference: {fileID: 8300000, guid: 5f36dc1aa05d4354e9bea30e6bb63ffe, type: 3}
     - target: {fileID: 3264939406063625526, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.874
+      objectReference: {fileID: 0}
+    - target: {fileID: 5572498687454977085, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
+      propertyPath: SortKey
+      value: 3405691972
       objectReference: {fileID: 0}
     - target: {fileID: 5572498687454977085, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
       propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
@@ -250,6 +244,12 @@ PrefabInstance:
       value: 0.32
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2860234651239405238, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7297609933912426313}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b38f7129a6eefb243892b37292066bf6, type: 3}
 --- !u!4 &5755390189370465098 stripped
 Transform:

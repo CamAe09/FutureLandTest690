@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Collections.Generic;
 	using UnityEngine;
@@ -8,28 +8,49 @@ namespace Fusion.KCC
 		public KCC         KCC;
 		public KCCData     Data;
 		public KCCSettings Settings;
+
+		public int LastInterpolationJumpCounter     = -1;
+		public int LastInterpolationTeleportCounter = -1;
 	}
 
-	public partial class KCC
+	// This file contains implementation related to network synchronization and interpolation based on network buffers.
+	public unsafe partial class KCC
 	{
 		// PRIVATE MEMBERS
 
 		private KCCNetworkContext     _networkContext;
 		private IKCCNetworkProperty[] _networkProperties;
-		private KCCNetworkProperties  _defaultProperties;
-
-		private static float _defaultPositionReadAccuracy = float.NaN;
 
 		// PUBLIC METHODS
 
-		public unsafe Vector3 ReadNetworkPosition(int* ptr)
+		/// <summary>
+		/// Returns position stored in network buffer.
+		/// </summary>
+		public Vector3 GetNetworkBufferPosition()
 		{
-			return _defaultProperties.ReadPosition(ptr);
+			fixed (int* ptr = &ReinterpretState<int>())
+			{
+				return ((NetworkTRSPData*)ptr)->Position + KCCNetworkUtility.ReadVector3(ptr + NetworkTRSPData.WORDS);
+			}
 		}
 
-		// NetworkAreaOfInterestBehaviour INTERFACE
+		/// <summary>
+		/// Returns interpolated position based on data stored in network buffers.
+		/// </summary>
+		public bool GetInterpolatedNetworkBufferPosition(out Vector3 interpolatedPosition)
+		{
+			interpolatedPosition = default;
 
-		public override int PositionWordOffset => 0;
+			bool buffersValid = TryGetSnapshotsBuffers(out NetworkBehaviourBuffer fromBuffer, out NetworkBehaviourBuffer toBuffer, out float alpha);
+			if (buffersValid == false)
+				return false;
+
+			KCCNetworkProperties.ReadPositions(fromBuffer, toBuffer, out Vector3 fromPosition, out Vector3 toPosition);
+
+			interpolatedPosition = Vector3.Lerp(fromPosition, toPosition, alpha);
+
+			return true;
+		}
 
 		// PRIVATE METHODS
 
@@ -48,105 +69,114 @@ namespace Fusion.KCC
 			return wordCount;
 		}
 
-		private unsafe void ReadNetworkData()
+		private void ReadNetworkData()
 		{
 			_networkContext.Data = _fixedData;
 
-			int* ptr = Ptr;
-
-			for (int i = 0, count = _networkProperties.Length; i < count; ++i)
+			fixed (int* statePtr = &ReinterpretState<int>())
 			{
-				IKCCNetworkProperty property = _networkProperties[i];
-				property.Read(ptr);
-				ptr += property.WordCount;
+				int* ptr = statePtr;
+
+				for (int i = 0, count = _networkProperties.Length; i < count; ++i)
+				{
+					IKCCNetworkProperty property = _networkProperties[i];
+					property.Read(ptr);
+					ptr += property.WordCount;
+				}
 			}
 		}
 
-		private unsafe void WriteNetworkData()
+		private void WriteNetworkData()
 		{
 			_networkContext.Data = _fixedData;
 
-			int* ptr = Ptr;
-
-			for (int i = 0, count = _networkProperties.Length; i < count; ++i)
+			fixed (int* statePtr = &ReinterpretState<int>())
 			{
-				IKCCNetworkProperty property = _networkProperties[i];
-				property.Write(ptr);
-				ptr += property.WordCount;
+				int* ptr = statePtr;
+
+				for (int i = 0, count = _networkProperties.Length; i < count; ++i)
+				{
+					IKCCNetworkProperty property = _networkProperties[i];
+					property.Write(ptr);
+					ptr += property.WordCount;
+				}
 			}
 		}
 
-		private unsafe void InterpolateNetworkData(float alpha = -1.0f)
+		private void InterpolateNetworkData()
 		{
-			if (_driver != EKCCDriver.Fusion)
+			bool buffersValid = TryGetSnapshotsBuffers(out NetworkBehaviourBuffer fromBuffer, out NetworkBehaviourBuffer toBuffer, out float alpha);
+			if (buffersValid == false)
 				return;
-			if (GetInterpolationData(out InterpolationData interpolationData) == false)
-				return;
 
-			if (alpha >= 0.0f && alpha <= 1.0f)
-			{
-				interpolationData.Alpha = alpha;
-			}
+			float deltaTime  = Runner.DeltaTime;
+			float renderTick = fromBuffer.Tick + alpha * (toBuffer.Tick - fromBuffer.Tick);
 
-			int   ticks = interpolationData.ToTick - interpolationData.FromTick;
-			float tick  = interpolationData.FromTick + interpolationData.Alpha * ticks;
+			_renderData.CopyFromOther(_fixedData);
 
-			// Store base Ptr for later use.
+			_renderData.Frame           = Time.frameCount;
+			_renderData.Tick            = Mathf.RoundToInt(renderTick);
+			_renderData.Alpha           = alpha;
+			_renderData.DeltaTime       = deltaTime;
+			_renderData.UpdateDeltaTime = deltaTime;
+			_renderData.Time            = renderTick * deltaTime;
 
-			int* basePtrFrom = interpolationData.From;
-			int* basePtrTo   = interpolationData.To;
+			_networkContext.Data = _renderData;
 
-			// We start with fixed data which has a state from server or interpolated state from last frame.
-
-			_networkContext.Data = _fixedData;
-
-			// Set general properties.
-
-			_fixedData.Frame             = Time.frameCount;
-			_fixedData.Tick              = Mathf.RoundToInt(tick);
-			_fixedData.Alpha             = interpolationData.Alpha;
-			_fixedData.DeltaTime         = Runner.DeltaTime;
-			_fixedData.UnscaledDeltaTime = _fixedData.DeltaTime;
-			_fixedData.Time              = tick * _fixedData.DeltaTime;
-
-			// Interpolate all networked properties.
+			KCCInterpolationInfo interpolationInfo = new KCCInterpolationInfo();
+			interpolationInfo.FromBuffer = fromBuffer;
+			interpolationInfo.ToBuffer   = toBuffer;
+			interpolationInfo.Alpha      = alpha;
 
 			for (int i = 0, count = _networkProperties.Length; i < count; ++i)
 			{
 				IKCCNetworkProperty property = _networkProperties[i];
-				property.Interpolate(interpolationData);
-				interpolationData.From += property.WordCount;
-				interpolationData.To   += property.WordCount;
-			}
-
-			// Teleport detection.
-
-			if (ticks > 0)
-			{
-				Vector3 fromPosition = KCCNetworkUtility.ReadVector3(basePtrFrom, _defaultPositionReadAccuracy);
-				Vector3 toPosition   = KCCNetworkUtility.ReadVector3(basePtrTo,   _defaultPositionReadAccuracy);
-
-				Vector3 positionDifference = toPosition - fromPosition;
-				if (positionDifference.sqrMagnitude > _settings.TeleportThreshold * _settings.TeleportThreshold * ticks * ticks)
-				{
-					_fixedData.TargetPosition = toPosition;
-					_fixedData.RealVelocity   = Vector3.zero;
-					_fixedData.RealSpeed      = 0.0f;
-				}
-				else
-				{
-					_fixedData.RealVelocity = positionDifference / (_fixedData.DeltaTime * ticks);
-					_fixedData.RealSpeed    = _fixedData.RealVelocity.magnitude;
-				}
+				property.Interpolate(interpolationInfo);
+				interpolationInfo.Offset += property.WordCount;
 			}
 
 			// User interpolation and post-processing.
+			InterpolateUserNetworkData(_renderData, interpolationInfo);
+		}
 
-			InterpolateUserNetworkData(interpolationData);
+		private void InterpolateNetworkTransform()
+		{
+			bool buffersValid = TryGetSnapshotsBuffers(out NetworkBehaviourBuffer fromBuffer, out NetworkBehaviourBuffer toBuffer, out float alpha);
+			if (buffersValid == false)
+				return;
 
-			// Flipping fixed data to render data.
+			KCCNetworkProperties.ReadTransforms(fromBuffer, toBuffer, out Vector3 fromPosition, out Vector3 toPosition, out float fromLookPitch, out float toLookPitch, out float fromLookYaw, out float toLookYaw);
 
-			_renderData.CopyFromOther(_fixedData);
+			Vector3 targetPosition = Vector3.Lerp(fromPosition, toPosition, alpha);
+			float   lookPitch      = Mathf.Lerp(fromLookPitch, toLookPitch, alpha);
+			float   lookYaw        = KCCUtility.InterpolateRange(fromLookYaw, toLookYaw, -180.0f, 180.0f, alpha);
+			Vector3 realVelocity   = default;
+			float   realSpeed      = default;
+
+			int ticks = toBuffer.Tick - fromBuffer.Tick;
+			if (ticks > 0)
+			{
+				realVelocity = (toPosition - fromPosition) / (Runner.DeltaTime * ticks);
+				realSpeed    = realVelocity.magnitude;
+			}
+
+			_renderData.BasePosition    = fromPosition;
+			_renderData.DesiredPosition = toPosition;
+			_renderData.TargetPosition  = targetPosition;
+			_renderData.LookPitch       = lookPitch;
+			_renderData.LookYaw         = lookYaw;
+			_renderData.RealVelocity    = realVelocity;
+			_renderData.RealSpeed       = realSpeed;
+
+			_fixedData.BasePosition    = _renderData.BasePosition;
+			_fixedData.DesiredPosition = _renderData.DesiredPosition;
+			_fixedData.TargetPosition  = _renderData.TargetPosition;
+			_fixedData.LookPitch       = _renderData.LookPitch;
+			_fixedData.LookYaw         = _renderData.LookYaw;
+			_fixedData.RealVelocity    = _renderData.RealVelocity;
+			_fixedData.RealSpeed       = _renderData.RealSpeed;
+
+			_transform.SetPositionAndRotation(_renderData.TargetPosition, _renderData.TransformRotation);
 		}
 
 		private void RestoreHistoryData(KCCData historyData)
@@ -156,9 +186,10 @@ namespace Fusion.KCC
 
 			if (_fixedData.IsGrounded == true)
 			{
-				// Reset IsGrounded to history state, otherwise using GroundNormal and other ground related properties leads to undefined behavior and NaN propagation.
-				// This has effect only if IsGrounded is synchronized over network.
-				_fixedData.IsGrounded = historyData.IsGrounded;
+				// Reset IsGrounded and WasGrounded to history state, otherwise using GroundNormal and other ground related properties leads to undefined behavior and NaN propagation.
+				// This has effect only if IsGrounded and WasGrounded is synchronized over network.
+				_fixedData.IsGrounded  = historyData.IsGrounded;
+				_fixedData.WasGrounded = historyData.WasGrounded;
 			}
 
 			// User history data restoration.
@@ -168,11 +199,6 @@ namespace Fusion.KCC
 
 		private void InitializeNetworkProperties()
 		{
-			if (_defaultPositionReadAccuracy.IsNaN() == true)
-			{
-				_defaultPositionReadAccuracy = new Accuracy(AccuracyDefaults.POSITION).Value;
-			}
-
 			if (_networkContext != null)
 				return;
 
@@ -180,14 +206,8 @@ namespace Fusion.KCC
 			_networkContext.KCC      = this;
 			_networkContext.Settings = _settings;
 
-			_defaultProperties = new KCCNetworkProperties(_networkContext, _settings.PositionAccuracy, _settings.RotationAccuracy);
-
 			List<IKCCNetworkProperty> properties = new List<IKCCNetworkProperty>(32);
-			properties.Add(_defaultProperties);
-
-			if (_settings.MaxNetworkedCollisions > 0) { properties.Add(new KCCNetworkCollisions(_networkContext, _settings.MaxNetworkedCollisions)); }
-			if (_settings.MaxNetworkedModifiers  > 0) { properties.Add(new KCCNetworkModifiers (_networkContext, _settings.MaxNetworkedModifiers));  }
-			if (_settings.MaxNetworkedIgnores    > 0) { properties.Add(new KCCNetworkIgnores   (_networkContext, _settings.MaxNetworkedIgnores));    }
+			properties.Add(new KCCNetworkProperties(_networkContext));
 
 			InitializeUserNetworkProperties(_networkContext, properties);
 
@@ -197,7 +217,7 @@ namespace Fusion.KCC
 		// PARTIAL METHODS
 
 		partial void InitializeUserNetworkProperties(KCCNetworkContext networkContext, List<IKCCNetworkProperty> networkProperties);
-		partial void InterpolateUserNetworkData(InterpolationData interpolationData);
+		partial void InterpolateUserNetworkData(KCCData data, KCCInterpolationInfo interpolationInfo);
 		partial void RestoreUserHistoryData(KCCData historyData);
 	}
 }

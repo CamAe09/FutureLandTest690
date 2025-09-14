@@ -7,11 +7,20 @@ namespace TPSBR
 	{
 		// PUBLIC MEMBERS
 
-		public bool Consumed     => _consumed;
-		public bool IsDisabled   => _isDisabled;
-		public bool AutoDespawn  => _despawnDelay > 0f;
+		public bool Consumed    => _consumed;
+		public bool IsDisabled  => _isDisabled;
+		public bool AutoDespawn => _despawnDelay > 0f;
 
 		public System.Action<StaticPickup> PickupConsumed;
+
+		// PROTECTED MEMBERS
+
+		[Networked]
+		protected EBehaviour _behaviour { get; private set; }
+		[Networked]
+		protected NetworkBool _consumed { get; private set; }
+		[Networked]
+		protected NetworkBool _isDisabled { get; private set; }
 
 		// PRIVATE MEMBERS
 
@@ -30,15 +39,11 @@ namespace TPSBR
 		[SerializeField]
 		private EBehaviour _startBehaviour;
 
-		[Networked(OnChanged = nameof(OnBehaviourChanged), OnChangedTargets = OnChangedTargets.All)]
-		private EBehaviour _behaviour { get; set; }
-		[Networked(OnChanged = nameof(OnConsumedChanged), OnChangedTargets = OnChangedTargets.All)]
-		private NetworkBool _consumed { get; set; }
-		[Networked]
-		private NetworkBool _isDisabled { get; set; }
-
-		private TickTimer _despawnCooldown;
-		private Collider  _collider;
+		private bool       _localIsInitialized;
+		private EBehaviour _localBehaviour;
+		private bool       _localConsumed;
+		private TickTimer  _despawnCooldown;
+		private Collider   _collider;
 
 		// IInteraction INTERFACE
 
@@ -54,24 +59,26 @@ namespace TPSBR
 
 		public void Refresh()
 		{
-			if (Object == null || Object.HasStateAuthority == false)
+			if (Object == null || HasStateAuthority == false)
 				return;
 
 			_despawnCooldown = default;
 			_consumed        = false;
 
 			SetIsDisabled(false);
+
+			UpdateLocalState();
 		}
 
 		public void SetIsDisabled(bool value)
 		{
-			if (Object == null || Object.HasStateAuthority == false)
+			if (Object == null || HasStateAuthority == false)
 				return;
 
 			_isDisabled = value;
 		}
 
-		public bool TryConsume(Agent agent, out string result)
+		public bool TryConsume(GameObject instigator, out string result)
 		{
 			if (Object == null)
 			{
@@ -85,7 +92,7 @@ namespace TPSBR
 				return false;
 			}
 
-			if (Consume(agent, out result) == false)
+			if (Consume(instigator, out result) == false)
 				return false;
 
 			_consumed = true;
@@ -95,6 +102,8 @@ namespace TPSBR
 				_despawnCooldown = TickTimer.CreateFromSeconds(Runner, _despawnDelay);
 			}
 
+			UpdateLocalState();
+
 			PickupConsumed?.Invoke(this);
 
 			return true;
@@ -102,57 +111,62 @@ namespace TPSBR
 
 		public void SetBehaviour(EBehaviour behaviour, float despawnDelay)
 		{
-			if (Object == null || Object.HasStateAuthority == false)
+			if (Object == null || HasStateAuthority == false)
 				return;
 
-			_despawnDelay = despawnDelay;
 			_behaviour    = behaviour;
+			_despawnDelay = despawnDelay;
+
+			UpdateLocalState();
 		}
 
 		// PROTECTED METHODS
 
-		protected virtual bool Consume(Agent agent, out string result) { result = string.Empty; return false; }
-
-		protected virtual void OnConsumed()
-		{
-			if (Runner.Stage == SimulationStages.Resimulate)
-				return;
-
-			_visuals.SetActiveSafe(false);
-
-			if (_consumeSound != null)
-			{
-				_consumeSound.Play();
-			}
-		}
+		protected virtual bool Consume(GameObject instigator, out string result) { result = string.Empty; return false; }
 
 		// NetworkBehaviour INTERFACE
 
 		public override void Spawned()
 		{
-			if (Object.HasStateAuthority == true)
+			_localIsInitialized = default;
+			_localBehaviour     = default;
+			_localConsumed      = default;
+
+			if (HasStateAuthority == true)
 			{
 				_behaviour = _startBehaviour;
 			}
 
-			UpdateState();
-		}
-
-		public override void FixedUpdateNetwork()
-		{
-			if (Object.HasStateAuthority == false)
-				return;
-
-			if (_consumed == true && _despawnCooldown.Expired(Runner) == true)
-			{
-				Runner.Despawn(Object);
-			}
+			UpdateLocalState();
 		}
 
 		public override void Despawned(NetworkRunner runner, bool hasState)
 		{
 			PickupConsumed = null;
-			_despawnCooldown = default;
+
+			_despawnCooldown    = default;
+			_localConsumed      = default;
+			_localBehaviour     = default;
+			_localIsInitialized = default;
+		}
+
+		public override void FixedUpdateNetwork()
+		{
+			if (HasStateAuthority == false)
+				return;
+
+			if (_consumed == true && _despawnCooldown.Expired(Runner) == true)
+			{
+				Runner.Despawn(Object);
+				return;
+			}
+
+			UpdateLocalState();
+		}
+
+		public override void Render()
+		{
+			UpdateLocalState();
 		}
 
 		// MONOBEHAVIOUR
@@ -164,45 +178,46 @@ namespace TPSBR
 
 		protected void OnTriggerEnter(Collider other)
 		{
-			if (Object == null || Object.HasStateAuthority == false)
+			if (Object == null || HasStateAuthority == false)
 				return;
 
 			if (_consumed == true)
 				return;
 
-			var agent = other.GetComponentInParent<Agent>();
-			if (agent == null)
+			var networkObject = other.GetComponentInParent<NetworkObject>();
+			if (networkObject == null)
 				return;
 
-			TryConsume(agent, out string result);
+			TryConsume(networkObject.gameObject, out string result);
 		}
 
 		// PRIVATE METHODS
 
-		private void UpdateState()
+		private void UpdateLocalState()
 		{
-			_collider.enabled = _consumed == false;
-			_visuals.SetActiveSafe(_consumed == false);
-
-			_collider.isTrigger = _behaviour == EBehaviour.Trigger;
-			_collider.gameObject.layer = _behaviour == EBehaviour.Trigger ? ObjectLayer.Pickup : ObjectLayer.Interaction;
-		}
-
-		// NETWORK CALLBACKS
-
-		public static void OnConsumedChanged(Changed<StaticPickup> changed)
-		{
-			if (changed.Behaviour._consumed == true)
+			if (_localIsInitialized == false || _localConsumed != _consumed)
 			{
-				changed.Behaviour.OnConsumed();
+				_localConsumed = _consumed;
+				_collider.enabled = _consumed == false;
+				_visuals.SetActiveSafe(_consumed == false);
+
+				if (_consumed == true)
+				{
+					if (_consumeSound != null)
+					{
+						_consumeSound.Play();
+					}
+				}
 			}
 
-			changed.Behaviour.UpdateState();
-		}
+			if (_localIsInitialized == false || _localBehaviour != _behaviour)
+			{
+				_localBehaviour = _behaviour;
+				_collider.isTrigger = _behaviour == EBehaviour.Trigger;
+				_collider.gameObject.layer = _behaviour == EBehaviour.Trigger ? ObjectLayer.Pickup : ObjectLayer.Interaction;
+			}
 
-		private static void OnBehaviourChanged(Changed<StaticPickup> changed)
-		{
-			changed.Behaviour.UpdateState();
+			_localIsInitialized = true;
 		}
 
 		// HELPERS

@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using UnityEngine;
 
@@ -23,18 +23,16 @@ namespace Fusion.KCC
 
 		public static void ProjectVerticalPenetration(ref Vector3 direction, ref float distance)
 		{
-			Vector3 desiredCorrection = direction * distance;
+			Vector3 desiredCorrection    = direction * distance;
+			Vector3 desiredCorrectionXZ  = desiredCorrection.OnlyXZ();
+			float   correctionDistanceXZ = Vector3.Magnitude(desiredCorrectionXZ);
 
-			float distanceXZ        = distance * (1.0f - Vector3.Dot(direction, Vector3.up));
-			float reflectedDistance = desiredCorrection.y * desiredCorrection.y / distanceXZ;
-
-			desiredCorrection = desiredCorrection.OnlyXZ() * (1.0f + reflectedDistance / distanceXZ);
-
-			float desiredDistance = Vector3.Magnitude(desiredCorrection);
-			if (desiredDistance >= 0.000001f)
+			if (correctionDistanceXZ >= 0.000001f)
 			{
-				direction = desiredCorrection / desiredDistance;
-				distance  = desiredDistance;
+				float reflectedDistanceXZ = desiredCorrection.y * desiredCorrection.y / correctionDistanceXZ;
+
+				direction = desiredCorrectionXZ / correctionDistanceXZ;
+				distance  = correctionDistanceXZ + reflectedDistanceXZ;
 			}
 		}
 
@@ -57,17 +55,21 @@ namespace Fusion.KCC
 			}
 		}
 
-		public static bool CheckGround(Collider collider, Vector3 position, Collider groundCollider, Transform groundTransform, float radius, float height, float extent, float minGroundDot, out Vector3 groundNormal, out float groundDistance, out bool isWithinExtent)
+		public static bool CheckGround(Collider collider, Vector3 position, Collider groundCollider, Vector3 groundColliderPosition, Quaternion groundColliderRotation, float radius, float height, float extent, float minGroundDot, out Vector3 groundNormal, out float groundDistance, out bool isWithinExtent)
 		{
-			isWithinExtent = false;
+			return CheckGround(collider, position, groundCollider, groundColliderPosition, groundColliderRotation, radius, height, extent, minGroundDot, out Vector3 groundPosition, out groundNormal, out groundDistance, out isWithinExtent);
+		}
 
+		public static bool CheckGround(Collider collider, Vector3 position, Collider groundCollider, Vector3 groundColliderPosition, Quaternion groundColliderRotation, float radius, float height, float extent, float minGroundDot, out Vector3 groundPosition, out Vector3 groundNormal, out float groundDistance, out bool isWithinExtent)
+		{
 #if KCC_DISABLE_TERRAIN
 			if (groundCollider is MeshCollider)
 #else
 			if (groundCollider is MeshCollider || groundCollider is TerrainCollider)
 #endif
 			{
-				if (Physics.ComputePenetration(collider, position - new Vector3(0.0f, extent, 0.0f), Quaternion.identity, groundCollider, groundTransform.position, groundTransform.rotation, out Vector3 direction, out float distance) == true)
+				Vector3 checkPosition = position - new Vector3(0.0f, extent, 0.0f);
+				if (Physics.ComputePenetration(collider, checkPosition, Quaternion.identity, groundCollider, groundColliderPosition, groundColliderRotation, out Vector3 direction, out float distance) == true)
 				{
 					isWithinExtent = true;
 
@@ -79,10 +81,9 @@ namespace Fusion.KCC
 
 						ProjectHorizontalPenetration(ref projectedDirection, ref projectedDistance);
 
-						float verticalDistance = Mathf.Max(0.0f, extent - projectedDistance);
-
 						groundNormal   = direction;
-						groundDistance = verticalDistance * directionUpDot;
+						groundPosition = checkPosition + Vector3.up * radius - direction * radius + projectedDirection * projectedDistance;
+						groundDistance = Mathf.Max(0.0f, Vector3.Distance(position, groundPosition) - radius);
 
 						return true;
 					}
@@ -94,7 +95,7 @@ namespace Fusion.KCC
 				float   radiusExtent              = radius + extent;
 				float   radiusExtentSqr           = radiusExtent * radiusExtent;
 				Vector3 centerPosition            = position + new Vector3(0.0f, radius, 0.0f);
-				Vector3 closestPoint              = Physics.ClosestPoint(centerPosition, groundCollider, groundTransform.position, groundTransform.rotation);
+				Vector3 closestPoint              = Physics.ClosestPoint(centerPosition, groundCollider, groundColliderPosition, groundColliderRotation);
 				Vector3 closestPointOffset        = closestPoint - centerPosition;
 				Vector3 closestPointOffsetXZ      = closestPointOffset.OnlyXZ();
 				float   closestPointDistanceXZSqr = closestPointOffsetXZ.sqrMagnitude;
@@ -115,6 +116,7 @@ namespace Fusion.KCC
 							if (closestGroundDot >= minGroundDot)
 							{
 								groundNormal   = closestGroundNormal;
+								groundPosition = closestPoint;
 								groundDistance = Mathf.Max(0.0f, closestPointDistance - radius);
 
 								return true;
@@ -129,12 +131,14 @@ namespace Fusion.KCC
 			}
 
 			groundNormal   = Vector3.up;
-			groundDistance = 0.0f;
+			groundPosition = position;
+			groundDistance = default;
+			isWithinExtent = default;
 
 			return false;
 		}
 
-		public static Vector3 GetAcceleration(Vector3 velocity, Vector3 direction, Vector3 axis, float maxSpeed, bool clampSpeed, float inputAcceleration, float constantAcceleration, float relativeAcceleration, float proportionalAcceleration, float deltaTime, float fixedDeltaTime)
+		public static Vector3 GetAcceleration(Vector3 velocity, Vector3 direction, Vector3 axis, float maxSpeed, bool clampSpeed, float inputAcceleration, float constantAcceleration, float relativeAcceleration, float proportionalAcceleration, float deltaTime)
 		{
 			if (inputAcceleration <= 0.0f)
 				return Vector3.zero;
@@ -156,7 +160,7 @@ namespace Fusion.KCC
 			relativeAcceleration     *= inputAcceleration;
 			proportionalAcceleration *= inputAcceleration;
 
-			float speedGain = (constantAcceleration + maxSpeed * relativeAcceleration + missingSpeed * proportionalAcceleration) * GetCompensatedDeltaTime(deltaTime, fixedDeltaTime);
+			float speedGain = (constantAcceleration + maxSpeed * relativeAcceleration + missingSpeed * proportionalAcceleration) * deltaTime;
 			if (speedGain <= 0.0f)
 				return Vector3.zero;
 
@@ -168,7 +172,7 @@ namespace Fusion.KCC
 			return baseDirection.normalized * speedGain;
 		}
 
-		public static Vector3 GetAcceleration(Vector3 velocity, Vector3 direction, Vector3 axis, Vector3 normal, float targetSpeed, bool clampSpeed, float inputAcceleration, float constantAcceleration, float relativeAcceleration, float proportionalAcceleration, float deltaTime, float fixedDeltaTime)
+		public static Vector3 GetAcceleration(Vector3 velocity, Vector3 direction, Vector3 axis, Vector3 normal, float targetSpeed, bool clampSpeed, float inputAcceleration, float constantAcceleration, float relativeAcceleration, float proportionalAcceleration, float deltaTime)
 		{
 			float accelerationMultiplier = 1.0f - Mathf.Clamp01(Vector3.Dot(direction.normalized, normal));
 
@@ -176,10 +180,10 @@ namespace Fusion.KCC
 			relativeAcceleration     *= accelerationMultiplier;
 			proportionalAcceleration *= accelerationMultiplier;
 
-			return GetAcceleration(velocity, direction, axis, targetSpeed, clampSpeed, inputAcceleration, constantAcceleration, relativeAcceleration, proportionalAcceleration, deltaTime, fixedDeltaTime);
+			return GetAcceleration(velocity, direction, axis, targetSpeed, clampSpeed, inputAcceleration, constantAcceleration, relativeAcceleration, proportionalAcceleration, deltaTime);
 		}
 
-		public static Vector3 GetFriction(Vector3 velocity, Vector3 direction, Vector3 axis, float maxSpeed, bool clampSpeed, float constantFriction, float relativeFriction, float proportionalFriction, float deltaTime, float fixedDeltaTime)
+		public static Vector3 GetFriction(Vector3 velocity, Vector3 direction, Vector3 axis, float maxSpeed, bool clampSpeed, float constantFriction, float relativeFriction, float proportionalFriction, float deltaTime)
 		{
 			if (constantFriction <= 0.0f && relativeFriction <= 0.0f && proportionalFriction <= 0.0f)
 				return Vector3.zero;
@@ -193,7 +197,7 @@ namespace Fusion.KCC
 			if (relativeFriction     < 0.0f) { relativeFriction     = 0.0f; }
 			if (proportionalFriction < 0.0f) { proportionalFriction = 0.0f; }
 
-			float speedDrop = (constantFriction + maxSpeed * relativeFriction + baseSpeed * proportionalFriction) * GetCompensatedDeltaTime(deltaTime, fixedDeltaTime);
+			float speedDrop = (constantFriction + maxSpeed * relativeFriction + baseSpeed * proportionalFriction) * deltaTime;
 			if (speedDrop <= 0.0f)
 				return Vector3.zero;
 
@@ -205,7 +209,7 @@ namespace Fusion.KCC
 			return -baseDirection * speedDrop;
 		}
 
-		public static Vector3 GetFriction(Vector3 velocity, Vector3 direction, Vector3 axis, Vector3 normal, float maxSpeed, bool clampSpeed, float constantFriction, float relativeFriction, float proportionalFriction, float deltaTime, float fixedDeltaTime)
+		public static Vector3 GetFriction(Vector3 velocity, Vector3 direction, Vector3 axis, Vector3 normal, float maxSpeed, bool clampSpeed, float constantFriction, float relativeFriction, float proportionalFriction, float deltaTime)
 		{
 			float frictionMultiplier = 1.0f - Mathf.Clamp01(Vector3.Dot(direction.normalized, normal));
 
@@ -213,7 +217,7 @@ namespace Fusion.KCC
 			relativeFriction     *= frictionMultiplier;
 			proportionalFriction *= frictionMultiplier;
 
-			return GetFriction(velocity, direction, axis, maxSpeed, clampSpeed, constantFriction, relativeFriction, proportionalFriction, deltaTime, fixedDeltaTime);
+			return GetFriction(velocity, direction, axis, maxSpeed, clampSpeed, constantFriction, relativeFriction, proportionalFriction, deltaTime);
 		}
 
 		public static Vector3 CombineAccelerationAndFriction(Vector3 velocity, Vector3 acceleration, Vector3 friction)
@@ -272,13 +276,6 @@ namespace Fusion.KCC
 			accumulatedCorrection += deltaCorrectionDirection * deltaCorrectionMagnitude;
 
 			return accumulatedCorrection;
-		}
-
-		// PRIVATE METHODS
-
-		private static float GetCompensatedDeltaTime(float deltaTime, float fixedDeltaTime)
-		{
-			return deltaTime * Mathf.Clamp(fixedDeltaTime / deltaTime, 1.0f, 8.0f);
 		}
 	}
 }

@@ -81,15 +81,18 @@ namespace TPSBR
 			return ProcessHit(ref processedHit);
 		}
 
-		public static bool ProcessHit(NetworkBehaviour instigator, Vector3 direction, LagCompensatedHit hit, float baseDamage, EHitType hitType, out HitData processedHit)
+		public static bool ProcessHit(NetworkObject instigator, Vector3 direction, LagCompensatedHit hit, float baseDamage, EHitType hitType, out HitData processedHit)
 		{
 			processedHit = default;
+
+			if (instigator == null)
+				return false;
 
 			IHitTarget target = hit.Hitbox != null ? hit.Hitbox.Root.GetComponent<IHitTarget>() : null;
 			if (target == null)
 				return false;
 
-			if (hit.Hitbox.Root.gameObject == instigator)
+			if (hit.Hitbox.Root.gameObject == instigator.gameObject)
 				return false;
 
 			processedHit.Action        = EHitAction.Damage;
@@ -98,8 +101,8 @@ namespace TPSBR
 			processedHit.Normal        = hit.Normal;
 			processedHit.Direction     = direction;
 			processedHit.Target        = target;
-			processedHit.InstigatorRef = instigator != null ? instigator.Object.InputAuthority : default;
-			processedHit.Instigator    = instigator != null ? instigator.GetComponent<IHitInstigator>() : null;
+			processedHit.InstigatorRef = instigator.InputAuthority;
+			processedHit.Instigator    = instigator.GetComponent<IHitInstigator>();
 			processedHit.HitType       = hitType;
 
 			if (hit.Hitbox is BodyPart bodyPart)

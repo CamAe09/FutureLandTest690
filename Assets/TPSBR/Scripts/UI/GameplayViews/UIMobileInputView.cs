@@ -122,11 +122,11 @@ namespace TPSBR.UI
 			ProcessTouches();
 			ProcessMouse();
 
-			if (_root.CanvasGroup.IsActive() == false && Context.LocalPlayerRef == Context.ObservedPlayerRef && Context.LocalPlayerRef.IsValid == true)
+			if (_root.CanvasGroup.IsActive() == false && Context.LocalPlayerRef == Context.ObservedPlayerRef && Context.LocalPlayerRef.IsRealPlayer == true)
 			{
 				ToggleState(true);
 			}
-			else if (_root.CanvasGroup.IsActive() == true && (Context.LocalPlayerRef != Context.ObservedPlayerRef || Context.LocalPlayerRef.IsValid == false))
+			else if (_root.CanvasGroup.IsActive() == true && (Context.LocalPlayerRef != Context.ObservedPlayerRef || Context.LocalPlayerRef.IsRealPlayer == false))
 			{
 				ToggleState(false);
 			}

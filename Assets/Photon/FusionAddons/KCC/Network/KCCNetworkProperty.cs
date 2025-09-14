@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	public unsafe interface IKCCNetworkProperty
 	{
@@ -6,7 +6,7 @@ namespace Fusion.KCC
 
 		void Read(int* ptr);
 		void Write(int* ptr);
-		void Interpolate(InterpolationData interpolationData);
+		void Interpolate(KCCInterpolationInfo interpolationInfo);
 	}
 
 	public unsafe abstract class KCCNetworkProperty<TContext> : IKCCNetworkProperty where TContext : class
@@ -30,6 +30,6 @@ namespace Fusion.KCC
 
 		public abstract void Read(int* ptr);
 		public abstract void Write(int* ptr);
-		public abstract void Interpolate(InterpolationData interpolationData);
+		public abstract void Interpolate(KCCInterpolationInfo interpolationInfo);
 	}
 }

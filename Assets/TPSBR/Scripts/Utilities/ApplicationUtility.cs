@@ -38,20 +38,6 @@ namespace TPSBR
 			return Path.Combine(DataPath, fileName);
 		}
 
-		public static int GetTimeID(int splitHours, int splitMinutes, int splitSeconds)
-		{
-			DateTime time   = System.DateTime.Now;
-			int      timeID = (time.Hour * 60 + time.Minute) * 60 + time.Second;
-
-			int denominator = (splitHours * 60 + splitMinutes) * 60 + splitSeconds;
-			if (denominator > 0)
-			{
-				timeID /= denominator;
-			}
-
-			return timeID;
-		}
-
 		public static bool HasCommandLineArgument(string name)
 		{
 			string[] arguments = Environment.GetCommandLineArgs();

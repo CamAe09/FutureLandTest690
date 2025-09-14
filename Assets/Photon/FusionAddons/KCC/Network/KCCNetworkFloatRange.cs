@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 	using UnityEngine;
@@ -62,19 +62,19 @@ namespace Fusion.KCC
 			}
 		}
 
-		public override void Interpolate(InterpolationData interpolationData)
+		public override void Interpolate(KCCInterpolationInfo interpolationInfo)
 		{
-			float fromValue = _readAccuracy <= 0.0f ? *(float*)interpolationData.From : (*interpolationData.From) * _readAccuracy;
-			float toValue   = _readAccuracy <= 0.0f ? *(float*)interpolationData.To   : (*interpolationData.To)   * _readAccuracy;
+			float fromValue = _readAccuracy <= 0.0f ? interpolationInfo.FromBuffer.ReinterpretState<float>(interpolationInfo.Offset) : interpolationInfo.FromBuffer.ReinterpretState<int>(interpolationInfo.Offset) * _readAccuracy;
+			float toValue   = _readAccuracy <= 0.0f ? interpolationInfo.ToBuffer.ReinterpretState<float>(interpolationInfo.Offset)   : interpolationInfo.ToBuffer.ReinterpretState<int>(interpolationInfo.Offset)   * _readAccuracy;
 			float value;
 
 			if (_interpolate != null)
 			{
-				value = _interpolate(Context, interpolationData.Alpha, fromValue, toValue);
+				value = _interpolate(Context, interpolationInfo.Alpha, fromValue, toValue);
 			}
 			else
 			{
-				value = KCCMathUtility.InterpolateRange(fromValue, toValue, _min, _max, interpolationData.Alpha);
+				value = KCCUtility.InterpolateRange(fromValue, toValue, _min, _max, interpolationInfo.Alpha);
 			}
 
 			_set(Context, value);

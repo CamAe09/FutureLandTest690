@@ -86,22 +86,22 @@ MonoBehaviour:
       BoolValue: 0
       FloatValue:
         Value: 0
-        MinValue: -80
+        MinValue: 0
         MaxValue: 0
       IntValue:
-        Value: 90
+        Value: 360
         MinValue: 30
-        MaxValue: 288
+        MaxValue: 360
       StringValue: 
     - Key: LimitFPS
       Type: 1
-      BoolValue: 1
+      BoolValue: 0
       FloatValue:
         Value: 0
-        MinValue: -80
+        MinValue: 0
         MaxValue: 0
       IntValue:
-        Value: 60
+        Value: 0
         MinValue: 0
         MaxValue: 0
       StringValue: 
@@ -131,7 +131,7 @@ MonoBehaviour:
       StringValue: 
     - Key: VSync
       Type: 1
-      BoolValue: 1
+      BoolValue: 0
       FloatValue:
         Value: 0
         MinValue: 0

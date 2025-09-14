@@ -1,9 +1,9 @@
-using Fusion.KCC;
+using Fusion.Addons.KCC;
 using UnityEngine;
 
 namespace TPSBR
 {
-	public sealed class JetpackKCCProcessor : BaseKCCProcessor
+	public sealed class JetpackKCCProcessor : KCCProcessor, IKCCProcessor, IPrepareData
 	{
 		// PRIVATE MEMBERS
 
@@ -37,7 +37,7 @@ namespace TPSBR
 
 		// KCCProcessor INTERFACE
 
-		public override float Priority => float.MaxValue;
+		public override float GetPriority(KCC kcc) => float.MaxValue;
 
 		public override void OnEnter(KCC kcc, KCCData data)
 		{
@@ -45,27 +45,41 @@ namespace TPSBR
 			_hasJetpack = _jetpack != null;
 		}
 
-		public override EKCCStages GetValidStages(KCC kcc, KCCData data)
+		public void Execute(PrepareData stage, KCC kcc, KCCData data)
 		{
-			EKCCStages stages = EKCCStages.None;
+			data.Gravity = Physics.gravity * _gravityMultiplier;
 
-			if (_hasJetpack == true && _jetpack.IsActive == true)
+			// We explicitly need data from fixed update.
+			KCCData fixedData      = kcc.FixedData;
+			float   fixedDeltaTime = fixedData.DeltaTime;
+
+			if (kcc.IsInFixedUpdate == false)
 			{
-				stages |= EKCCStages.SetInputProperties;
-				stages |= EKCCStages.SetDynamicVelocity;
-				stages |= EKCCStages.SetKinematicDirection;
-				stages |= EKCCStages.SetKinematicTangent;
-				stages |= EKCCStages.SetKinematicSpeed;
-				stages |= EKCCStages.SetKinematicVelocity;
-				stages |= EKCCStages.ProcessPhysicsQuery;
-				stages |= EKCCStages.OnStay;
+				// Reset to fixed update values. Instead of partial render predicted velocity we calculate velocity for next fixed update.
+				data.KinematicVelocity    = fixedData.KinematicVelocity;
+				data.ExternalVelocity     = fixedData.ExternalVelocity;
+				data.ExternalAcceleration = fixedData.ExternalAcceleration;
+				data.ExternalImpulse      = fixedData.ExternalImpulse;
+				data.ExternalForce        = fixedData.ExternalForce;
+				data.DynamicVelocity      = fixedData.DynamicVelocity;
 			}
 
-			return stages;
-		}
+			data.KinematicDirection = data.InputDirection;
+			data.KinematicTangent   = default;
 
-		public override void SetInputProperties(KCC kcc, KCCData data)
-		{
+			if (data.KinematicDirection != default)
+			{
+				data.KinematicTangent = data.KinematicDirection.normalized;
+			}
+
+			if (data.KinematicTangent == default)
+			{
+				data.KinematicTangent = data.TransformDirection;
+			}
+
+			// Move velocity is only decreasing (e.g. after jetpack activation)
+			data.KinematicVelocity = Vector3.Lerp(data.KinematicVelocity, default, fixedDeltaTime * _moveVelocityDecreaseSpeed);
+
 			float thrustForce = 0f;
 
 			if (_jetpack.IsRunning == true)
@@ -75,22 +89,17 @@ namespace TPSBR
 
 			data.ExternalForce += Vector3.up * thrustForce;
 
-			if (thrustForce > 0f && _jetpack.FullThrust == true && data.RealVelocity.y < 0f && data.RealVelocity.y < 0f)
+			if (thrustForce > 0f && _jetpack.FullThrust == true && fixedData.RealVelocity.y < 0f)
 			{
 				data.ExternalVelocity += new Vector3(0f, -data.DynamicVelocity.y * _upThrustOppositeVelocityMultiplier, 0f);
 			}
 
-			if (data.IsGrounded == true && _jetpack.FullThrust == true)
+			if (fixedData.IsGrounded == true && _jetpack.FullThrust == true)
 			{
 				data.ExternalImpulse += Vector3.up * _groundThrustImpulse;
 			}
 
-			kcc.SuppressProcessors<IKCCProcessor>();
-		}
-
-		public override void SetDynamicVelocity(KCC kcc, KCCData data)
-		{
-			if (data.IsGrounded == true && data.IsSnappingToGround == false && data.DynamicVelocity.y < 0.0f && data.DynamicVelocity.OnlyXZ().IsAlmostZero())
+			if (fixedData.IsGrounded == true && fixedData.IsSnappingToGround == false && data.DynamicVelocity.y < 0.0f && data.DynamicVelocity.OnlyXZ().IsAlmostZero())
 			{
 				data.DynamicVelocity.y = 0f;
 			}
@@ -115,7 +124,7 @@ namespace TPSBR
 
 			if (_moveForce > 0f && data.KinematicDirection != default)
 			{
-				var velocityXZ = data.RealVelocity.OnlyXZ();
+				var velocityXZ = fixedData.RealVelocity.OnlyXZ();
 				float oppositeDirectionDot = Vector3.Dot(-velocityXZ.normalized, data.KinematicTangent);
 
 				if (oppositeDirectionDot > 0f)
@@ -126,12 +135,12 @@ namespace TPSBR
 				data.ExternalForce += data.KinematicTangent * _moveForce;
 			}
 
-			data.DynamicVelocity += data.Gravity * _gravityMultiplier * data.DeltaTime;
+			data.DynamicVelocity += data.Gravity * fixedDeltaTime;
 
 			data.DynamicVelocity += data.ExternalVelocity;
-			data.DynamicVelocity += data.ExternalAcceleration * data.DeltaTime;
-			data.DynamicVelocity += (data.ExternalImpulse / kcc.Settings.Mass);
-			data.DynamicVelocity += (data.ExternalForce / kcc.Settings.Mass) * data.DeltaTime;
+			data.DynamicVelocity += data.ExternalAcceleration * fixedDeltaTime;
+			data.DynamicVelocity += (data.ExternalImpulse / kcc.Rigidbody.mass);
+			data.DynamicVelocity += (data.ExternalForce / kcc.Rigidbody.mass) * fixedDeltaTime;
 
 			Vector3 velocityDirection = data.KinematicTangent;
 			float speed = data.DynamicVelocity.magnitude;
@@ -141,56 +150,26 @@ namespace TPSBR
 				velocityDirection = data.DynamicVelocity / speed;
 			}
 
-			data.DynamicVelocity += -0.5f * (data.IsGrounded == true ? _groundPhysicsFriction : _airPhysicsFriction) * velocityDirection * speed * speed;
+			data.DynamicVelocity += -0.5f * (fixedData.IsGrounded == true ? _groundPhysicsFriction : _airPhysicsFriction) * velocityDirection * speed * speed;
 
-			kcc.SuppressProcessors<IKCCProcessor>();
-		}
-
-		public override void SetKinematicDirection(KCC kcc, KCCData data)
-		{
-			data.KinematicDirection = data.InputDirection;
-
-			kcc.SuppressProcessors<IKCCProcessor>();
-		}
-
-		public override void SetKinematicTangent(KCC kcc, KCCData data)
-		{
-			data.KinematicTangent = default;
-
-			if (data.KinematicDirection != default)
+			if (kcc.IsInFixedUpdate == true)
 			{
-				data.KinematicTangent = data.KinematicDirection.normalized;
+				// Consume one-time effects only in fixed update.
+				// For render prediction we need them to be applied on top of fixed data in all frames.
+				data.JumpImpulse      = default;
+				data.ExternalVelocity = default;
+				data.ExternalImpulse  = default;
 			}
 
-			if (data.KinematicTangent == default)
-			{
-				data.KinematicTangent = data.TransformDirection;
-			}
+			// Forces applied over-time are reset always. These are set every tick/frame.
+			data.ExternalAcceleration = default;
+			data.ExternalForce        = default;
 
-			kcc.SuppressProcessors<IKCCProcessor>();
+			kcc.SuppressProcessorsExcept(this, true);
 		}
 
-		public override void SetKinematicSpeed(KCC kcc, KCCData data)
-		{
-			kcc.SuppressProcessors<IKCCProcessor>();
-		}
+		// IKCCProcessor INTERFACE
 
-		public override void SetKinematicVelocity(KCC kcc, KCCData data)
-		{
-			// Move velocity is only decreasing (e.g. after jetpack activation)
-			data.KinematicVelocity = Vector3.Lerp(data.KinematicVelocity, default, data.DeltaTime * _moveVelocityDecreaseSpeed);
-
-			kcc.SuppressProcessors<IKCCProcessor>();
-		}
-
-		public override void ProcessPhysicsQuery(KCC kcc, KCCData data)
-		{
-			kcc.SuppressProcessors<IKCCProcessor>();
-		}
-
-		public override void OnStay(KCC kcc, KCCData data)
-		{
-			data.ExternalForce = default;
-		}
+		bool IKCCProcessor.IsActive(KCC kcc) => _hasJetpack == true && _jetpack.IsActive == true;
 	}
 }

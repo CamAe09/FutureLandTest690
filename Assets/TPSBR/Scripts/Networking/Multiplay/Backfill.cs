@@ -62,7 +62,7 @@ namespace TPSBR
 
 		// Note: NetworkGame.Players is a NetworkArray of length = max players, filling from the last position
 		// This simplifies access to the current actively connected players
-		private IEnumerable<Player> _networkPlayers => Context.NetworkGame.Players.Where(p => p != null);
+		private IEnumerable<Player> _networkPlayers => Context.NetworkGame.ActivePlayers.Where(p => p != null);
 
 		private float _backfillIntervalMs = 3.0f;
 		private float _backfillTimerMs = 0f;
@@ -309,6 +309,13 @@ namespace TPSBR
 
 			_backfillTicket.Properties.MatchProperties.Players.Clear();
 			_backfillTicket.Properties.MatchProperties.Players.AddRange(backfillPlayers);
+
+			Team team = _backfillTicket.Properties.MatchProperties.Teams.FirstOrDefault();
+			if (team != null)
+			{
+				team.PlayerIds.Clear();
+				team.PlayerIds.AddRange(backfillPlayers.Select(p => p.Id));
+			}
 
 			await MatchmakerService.Instance.UpdateBackfillTicketAsync(_backfillTicket.Id, _backfillTicket);
 		}

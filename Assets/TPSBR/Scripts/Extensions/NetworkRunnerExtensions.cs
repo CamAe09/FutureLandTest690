@@ -13,7 +13,7 @@ namespace TPSBR
 
 			if (runner.Config.PeerMode != NetworkProjectConfig.PeerModes.Single)
 			{
-				RunnerVisibilityNode.AddVisibilityNodes(gameObject, runner);
+				runner.AddVisibilityNodes(gameObject);
 			}
 
 			SceneManager.MoveGameObjectToScene(gameObject, runner.SimulationUnityScene);

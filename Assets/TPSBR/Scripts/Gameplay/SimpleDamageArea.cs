@@ -1,9 +1,9 @@
-using Fusion;
 using UnityEngine;
+using Fusion;
 
 namespace TPSBR
 {
-	public class SimpleDamageArea : NetworkBehaviour
+	public sealed class SimpleDamageArea : NetworkBehaviour
 	{
 		// PRIVATE MEMBERS
 
@@ -25,7 +25,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (_damagePerSecond <= 0f)

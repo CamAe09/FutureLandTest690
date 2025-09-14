@@ -12,12 +12,7 @@ namespace TPSBR
 		public SceneContext Context { get; set; }
     }
 
-	public abstract class ContextSimulationBehaviour : SimulationBehaviour, IContextBehaviour
-    {
-		public SceneContext Context { get; set; }
-    }
-
-    public abstract class ContextAreaOfInterestBehaviour : NetworkAreaOfInterestBehaviour, IContextBehaviour
+    public abstract class ContextTRSPBehaviour : NetworkTRSP, IContextBehaviour
     {
 		public SceneContext Context { get; set; }
     }

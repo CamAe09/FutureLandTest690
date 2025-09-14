@@ -26,6 +26,20 @@ namespace TPSBR
 			if (agentID == _agentID && force == false)
 				return;
 
+			// Check if player owns this agent (unless it's a default free agent)
+			if (agentID.HasValue() && !IsFreeAgent(agentID))
+			{
+				if (PlayerInventory.Instance != null)
+				{
+					bool ownsAgent = PlayerInventory.Instance.HasItem(agentID);
+					if (!ownsAgent)
+					{
+						Debug.Log($"🔒 Player does not own agent {agentID}, cannot preview it. Purchase it from the shop first!");
+						return;
+					}
+				}
+			}
+
 			ClearAgent();
 			InstantiateAgent(agentID);
 		}
@@ -49,6 +63,13 @@ namespace TPSBR
 		}
 
 		// PRIVATE METHODS
+
+		private bool IsFreeAgent(string agentID)
+		{
+			// List of agents that are free/default and don't need to be purchased
+			// Agent01 = Default agent, Agent.Marine = Free marine character  
+			return agentID == "Agent01" || agentID == "Agent.Marine";
+		}
 
 		private void InstantiateAgent(string agentID)
 		{

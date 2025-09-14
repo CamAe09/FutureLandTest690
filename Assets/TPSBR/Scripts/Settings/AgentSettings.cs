@@ -27,12 +27,12 @@ namespace TPSBR
 			return _agents.Find(t => t.ID == agentID);
 		}
 
-		public AgentSetup GetAgentSetup(NetworkPrefabId prefabId)
+		public AgentSetup GetAgentSetup(NetworkPrefabRef prefabId)
 		{
 			if (prefabId.IsValid == false)
 				return null;
 
-			return _agents.Find(t => t.AgentPrefabId == prefabId);
+			return _agents.Find(t => t.AgentPrefab == prefabId);
 		}
 
 		public AgentSetup GetRandomAgentSetup()
@@ -50,21 +50,8 @@ namespace TPSBR
 		public string               DisplayName       => _displayName;
 		public string               Description       => _description;
 		public Sprite               Icon              => _icon;
-		public GameObject           AgentPrefab       => _agentPrefab;
+		public NetworkPrefabRef     AgentPrefab       => _agentPrefab;
 		public GameObject           MenuAgentPrefab   => _menuAgentPrefab;
-
-		public NetworkPrefabId      AgentPrefabId
-		{
-			get
-			{
-				if (_agentPrefabId.IsValid == false && NetworkProjectConfig.Global.PrefabTable.TryGetId(_agentPrefab.GetComponent<NetworkObject>().NetworkGuid, out var id) == true)
-				{
-					_agentPrefabId = id;
-				}
-
-				return _agentPrefabId;
-			}
-		}
 
 		// PRIVATE MEMBERS
 
@@ -77,11 +64,8 @@ namespace TPSBR
 		[SerializeField]
 		private Sprite _icon;
 		[SerializeField]
-		private GameObject _agentPrefab;
+		private NetworkPrefabRef _agentPrefab;
 		[SerializeField]
 		private GameObject _menuAgentPrefab;
-
-		[NonSerialized]
-		private NetworkPrefabId _agentPrefabId;
 	}
 }

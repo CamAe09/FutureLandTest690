@@ -91,12 +91,12 @@ namespace TPSBR.UI
 
 			_sniperScope.SetActive(showScope);
 
-			bool showUndesiredFirePosition = weaponValid == true && agent.Weapons.UndesiredTargetPoint;
+			bool showUndesiredFirePosition = weaponValid == true && agent.Interactions.IsUndesiredTargetPoint;
 			_undesiredFirePosition.SetActive(showUndesiredFirePosition);
 
 			if (showUndesiredFirePosition == true)
 			{
-				_undesiredFirePosition.transform.position = Context.Camera.Camera.WorldToScreenPoint(agent.Weapons.TargetPoint);
+				_undesiredFirePosition.transform.position = Context.Camera.Camera.WorldToScreenPoint(agent.Interactions.TargetPoint);
 			}
 
 			_crosshairRootGroup.alpha = Mathf.Lerp(_crosshairRootGroup.alpha, showUndesiredFirePosition == true ? _undesiredFireCrosshairAlpha : 1f, Time.deltaTime * 8f);

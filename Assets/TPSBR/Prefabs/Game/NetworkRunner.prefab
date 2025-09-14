@@ -10,9 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 8953277532788236660}
   - component: {fileID: 3427936558554746844}
-  - component: {fileID: 8078923082400924388}
+  - component: {fileID: 5617160867327035011}
   - component: {fileID: 7546868333647497775}
   - component: {fileID: 805059789570169022}
+  - component: {fileID: 778541546648707129}
+  - component: {fileID: 8997174216592593285}
   m_Layer: 0
   m_Name: NetworkRunner
   m_TagString: Untagged
@@ -27,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4753164738901776644}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3427936558554746844
 MonoBehaviour:
@@ -47,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8078923082400924388
+--- !u!114 &5617160867327035011
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,9 +58,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4753164738901776644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1032120742, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b5a1ff9dee264bfd829a39e6542dcbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _physicsAuthority: 2
+  _physicsTiming: 3
+  ClientPhysicsSimulation: 1
+  DeltaTimeMultiplier: 1
+  SetUnityFixedTimestep: 0
 --- !u!114 &7546868333647497775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,6 +126,15 @@ MonoBehaviour:
   OnReliableData:
     m_PersistentCalls:
       m_Calls: []
+  OnReliableProgress:
+    m_PersistentCalls:
+      m_Calls: []
+  OnObjectEnterAOI:
+    m_PersistentCalls:
+      m_Calls: []
+  OnObjectExitAOI:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &805059789570169022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,3 +147,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2d139f59a17870418c11c7700dd9f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsSceneTakeOverEnabled: 1
+  LogSceneLoadErrors: 1
+--- !u!114 &778541546648707129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753164738901776644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8edbe7108d8a43ab838cf8b8d9453df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8997174216592593285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4753164738901776644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae01646afc1f47f9be5021000fe718ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interestCellSize: 24

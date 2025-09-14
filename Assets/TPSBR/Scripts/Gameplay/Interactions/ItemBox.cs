@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TPSBR
 {
-	public class ItemBox : NetworkBehaviour, IInteraction
+	public sealed class ItemBox : StaticNetworkTransform, IInteraction
 	{
 		// HELPERS
 
@@ -15,11 +15,6 @@ namespace TPSBR
 			Open,
 			Locked,
 		}
-
-		// PUBLIC MEMBERS
-
-		[Networked(OnChanged = nameof(StateChanged), OnChangedTargets = OnChangedTargets.All), HideInInspector]
-		public EState State { get; set; }
 
 		// PRIVATE MEMBERS
 
@@ -66,22 +61,31 @@ namespace TPSBR
 		private AudioSetup _closeSound;
 
 		[Networked]
-		private TickTimer StateTimer { get; set; }
+		private EState BoxState { get; set; }
+		[Networked]
+		private int    BoxTimer { get; set; }
 
 		private Animation      _animation;
 		private StaticPickup[] _nestedPickups;
+		private EState         _localState;
 
 		// PUBLIC METHODS
 
 		public void Open()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
-			if (State != EState.Closed)
+			if (BoxState != EState.Closed)
 				return;
 
-			StateTimer = TickTimer.CreateFromSeconds(Runner, _autoCloseTime);
-			State      = EState.Open;
+			BoxTimer = GetExpirationTick(_autoCloseTime);
+			BoxState = EState.Open;
+			
+			// Quest tracking for ItemBox opened
+			if (TPSBR.BattleRoyaleQuestTracker.Instance != null)
+			{
+				TPSBR.BattleRoyaleQuestTracker.Instance.OnBuildingLooted();
+			}
 
 			if (_behaviour == EBehaviour.RandomOnOpen || _nestedPickups[0] == null)
 			{
@@ -102,6 +106,8 @@ namespace TPSBR
 					_nestedPickups[i].Refresh();
 				}
 			}
+
+			UpdateLocalState();
 		}
 
 		// IInteraction INTERFACE
@@ -109,7 +115,7 @@ namespace TPSBR
 		string  IInteraction.Name        => _interactionName;
 		string  IInteraction.Description => _interactionDescription;
 		Vector3 IInteraction.HUDPosition => _hudPivot != null ? _hudPivot.position : transform.position;
-		bool    IInteraction.IsActive    => State == EState.Closed;
+		bool    IInteraction.IsActive    => BoxState == EState.Closed;
 
 		// MonoBehaviour INTERFACE
 
@@ -122,14 +128,18 @@ namespace TPSBR
 
 		public override void Spawned()
 		{
-			if (Object.HasStateAuthority == false)
-			{
-				OnStateChanged(State);
+			base.Spawned();
 
+			_localState = EState.None;
+
+			if (HasStateAuthority == false)
+			{
 				if (ApplicationSettings.IsStrippedBatch == true)
 				{
 					gameObject.SetActive(false);
 				}
+
+				UpdateLocalState();
 
 				return;
 			}
@@ -151,41 +161,35 @@ namespace TPSBR
 				default:
 					break;
 			}
+
+			UpdateLocalState();
 		}
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			// Expired
+			if (BoxTimer <= 0 || BoxTimer > Runner.Tick)
 				return;
 
-			switch (State)
+			switch (BoxState)
 			{
-				case EState.Open:   Update_Open();   break;
-				case EState.Locked: Update_Locked(); break;
+				case EState.Open:   Lock();   break;
+				case EState.Locked: Unlock(); break;
 			}
+
+			UpdateLocalState();
+		}
+
+		public override void Render()
+		{
+			UpdateLocalState();
 		}
 
 		// PRIVATE METHODS
 
-		private void Update_Open()
-		{
-			if (StateTimer.Expired(Runner) == false)
-				return;
-
-			Lock();
-		}
-
-		private void Update_Locked()
-		{
-			if (StateTimer.Expired(Runner) == false)
-				return;
-
-			Unlock();
-		}
-
 		private void Lock()
 		{
-			if (State == EState.Locked)
+			if (BoxState == EState.Locked)
 				return;
 
 			for (int i = 0; i < _nestedPickups.Length; i++)
@@ -196,13 +200,13 @@ namespace TPSBR
 				}
 			}
 
-			StateTimer = TickTimer.CreateFromSeconds(Runner, _unlockTime);
-			State      = EState.Locked;
+			BoxTimer = GetExpirationTick(_unlockTime);
+			BoxState = EState.Locked;
 		}
 
 		private void Unlock()
 		{
-			State = EState.Closed;
+			BoxState = EState.Closed;
 
 			for (int i = 0; i < _nestedPickups.Length; i++)
 			{
@@ -224,16 +228,21 @@ namespace TPSBR
 			return pickup;
 		}
 
-		private void OnStateChanged(EState state)
+		private void UpdateLocalState()
 		{
 			if (ApplicationSettings.IsStrippedBatch == true)
 				return;
 
-			_lockedState.SetActive(state == EState.Locked);
-			_unlockedState.SetActive(state != EState.Locked);
-			_interactionCollider.enabled = state == EState.Closed;
+			if (_localState == BoxState)
+				return;
 
-			switch (state)
+			_localState = BoxState;
+
+			_lockedState.SetActive(_localState == EState.Locked);
+			_unlockedState.SetActive(_localState != EState.Locked);
+			_interactionCollider.enabled = _localState == EState.Closed;
+
+			switch (_localState)
 			{
 				case EState.Open:
 					if (_animation.clip != _openAnimation)
@@ -300,9 +309,9 @@ namespace TPSBR
 			}
 		}
 
-		private static void StateChanged(Changed<ItemBox> changed)
+		private int GetExpirationTick(float time)
 		{
-			changed.Behaviour.OnStateChanged(changed.Behaviour.State);
+			return Runner.Tick + Mathf.CeilToInt(time / Runner.DeltaTime);
 		}
 
 		// HELPERS

@@ -8,23 +8,23 @@ PluginImporter:
   defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
-  isExplicitlyReferenced: 1
-  validateReferences: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
   platformData:
   - first:
       : Any
     second:
       enabled: 0
       settings:
-        Exclude Android: 1
-        Exclude Editor: 1
-        Exclude Linux: 1
-        Exclude Linux64: 1
-        Exclude LinuxUniversal: 1
-        Exclude OSXUniversal: 1
+        Exclude Android: 0
+        Exclude Editor: 0
+        Exclude Linux: 0
+        Exclude Linux64: 0
+        Exclude LinuxUniversal: 0
+        Exclude OSXUniversal: 0
         Exclude WebGL: 1
-        Exclude Win: 1
-        Exclude Win64: 1
+        Exclude Win: 0
+        Exclude Win64: 0
         Exclude WindowsStoreApps: 1
   - first:
       : OSXIntel
@@ -45,22 +45,22 @@ PluginImporter:
       settings:
         CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath: 
+        PlaceholderPath:
   - first:
       Android: Android
     second:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: ARMv7
   - first:
-      Any: 
+      Any:
     second:
-      enabled: 0
+      enabled: 1
       settings: {}
   - first:
       Editor: Editor
     second:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
@@ -80,39 +80,39 @@ PluginImporter:
   - first:
       Standalone: Linux
     second:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: x86
   - first:
       Standalone: Linux64
     second:
-      enabled: 0
+      enabled: 1
       settings:
-        CPU: None
+        CPU: AnyCPU
   - first:
       Standalone: LinuxUniversal
     second:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: AnyCPU
   - first:
       Standalone: OSXUniversal
     second:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: AnyCPU
   - first:
       Standalone: Win
     second:
-      enabled: 0
+      enabled: 1
       settings:
-        CPU: None
+        CPU: AnyCPU
   - first:
       Standalone: Win64
     second:
-      enabled: 0
+      enabled: 1
       settings:
-        CPU: None
+        CPU: AnyCPU
   - first:
       Windows Store Apps: WindowsStoreApps
     second:
@@ -120,7 +120,7 @@ PluginImporter:
       settings:
         CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath: 
+        PlaceholderPath:
         SDK: AnySDK
         ScriptingBackend: AnyScriptingBackend
   - first:
@@ -133,8 +133,8 @@ PluginImporter:
     second:
       enabled: 0
       settings:
-        CompileFlags: 
-        FrameworkDependencies: 
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+        CompileFlags:
+        FrameworkDependencies:
+  userData:
+  assetBundleName:
+  assetBundleVariant:

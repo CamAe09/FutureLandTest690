@@ -13,13 +13,15 @@ namespace TPSBR
 		[SerializeField]
 		private string                  _batchModeScene;
 		[SerializeField]
+		private bool                    _simulateBatchMode;
+		[SerializeField]
 		private StandaloneConfiguration _batchModeConfiguration;
 
 		// MonoBehaviour INTERFACE
 
 		private void Awake()
 		{
-			if (Application.isBatchMode == true)
+			if (Application.isBatchMode == true || _simulateBatchMode == true)
 			{
 				StartBatchGame();
 			}

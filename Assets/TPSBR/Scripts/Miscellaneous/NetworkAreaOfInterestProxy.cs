@@ -2,17 +2,15 @@ namespace TPSBR
 {
 	using UnityEngine;
 	using Fusion;
-	using Fusion.Plugin;
 
 	/// <summary>
-	/// This component serves as an AoI position source proxy. It is useful for objects which don't need their own NetworkTransform component, but still need to be filtered by AoI.
-	/// Every frame, the component stores position of a proxy object (usually owner/parent of this object) to [Networked] Position property with a special property group.
-	/// This property is never synchronized to clients and is updated on server/host only. This way AoI works correctly with zero network traffic overhead.
+	/// This component serves as an AoI position proxy. It is useful for objects which don't need their own NetworkTransform component, but still need to be filtered by AoI.
 	/// Example: Player + Weapon. Each Weapon is a separate dynamically spawned NetworkObject with NetworkAreaOfInterestProxy component. Upon spawn Weapon is parented under Player object (usually under a hand bone).
 	/// There is no need to synchronize Weapon position because it is driven locally. But if a Player runs out of AoI, we want to stop updating both objects Player and Weapon.
 	/// </summary>
 	[DisallowMultipleComponent]
-	public sealed unsafe class NetworkAreaOfInterestProxy : NetworkAreaOfInterestBehaviour
+	[DefaultExecutionOrder(10000)]
+	public sealed unsafe class NetworkAreaOfInterestProxy : NetworkTRSP
 	{
 		// PUBLIC MEMBERS
 
@@ -20,11 +18,8 @@ namespace TPSBR
 
 		// PRIVATE MEMBERS
 
-		[SerializeField, Tooltip("If left empty, component will try to find position source in parents")]
+		[SerializeField]
 		private Transform _positionSource;
-
-		[Networked("NoSync")][Accuracy(AccuracyDefaults.POSITION)][HideInInspector]
-		private Vector3 Position { get; set; }
 
 		private Transform _defaultPositionSource;
 		private bool      _hasExplicitPositionSource;
@@ -36,7 +31,7 @@ namespace TPSBR
 		{
 			if (_isSpawned == true)
 			{
-				Position = position;
+				State.Position = position;
 			}
 		}
 
@@ -66,13 +61,9 @@ namespace TPSBR
 		{
 			if (_isSpawned == true && _positionSource != null)
 			{
-				Position = _positionSource.position;
+				State.Position = _positionSource.position;
 			}
 		}
-
-		// NetworkAreaOfInterestBehaviour INTERFACE
-
-		public override int PositionWordOffset => 0;
 
 		// NetworkBehaviour INTERFACE
 
@@ -80,9 +71,11 @@ namespace TPSBR
 		{
 			_isSpawned = true;
 
+			ReplicateToAll(false);
+
 			if (_hasExplicitPositionSource == false && _positionSource == null)
 			{
-				Position = default;
+				State.Position = default;
 
 				FindPositionSourceInParent(false);
 			}
@@ -119,13 +112,9 @@ namespace TPSBR
 				NetworkObject networkObject = parentTransform.GetComponent<NetworkObject>();
 				if (networkObject != null)
 				{
-					NetworkAreaOfInterestBehaviour positionSource = networkObject.GetAOIPositionSource();
-					if (positionSource != null)
-					{
-						_positionSource = positionSource.transform;
-						_hasExplicitPositionSource = isExplicit;
-						break;
-					}
+					_positionSource = parentTransform;
+					_hasExplicitPositionSource = isExplicit;
+					break;
 				}
 
 				parentTransform = parentTransform.parent;

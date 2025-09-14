@@ -13,18 +13,33 @@ namespace TPSBR
 
 		// StaticPickup INTERFACE
 
-		protected override bool Consume(Agent agent, out string result)
+		protected override bool Consume(GameObject instigator, out string result)
 		{
+			if (instigator.TryGetComponent(out Health health) == false)
+			{
+				result = "Not applicable";
+				return false;
+			}
+
 			var hitData = new HitData
 			{
 				Action        = _actionType,
 				Amount        = _amount,
 				InstigatorRef = Object.InputAuthority,
-				Target        = agent.Health,
+				Target        = health,
 				HitType       = EHitType.Heal,
 			};
 
 			HitUtility.ProcessHit(ref hitData);
+			
+			// Quest tracking for healing item used
+			if (hitData.Amount > 0f && Object.InputAuthority == Runner.LocalPlayer)
+			{
+				if (TPSBR.BattleRoyaleQuestTracker.Instance != null)
+				{
+					TPSBR.BattleRoyaleQuestTracker.Instance.OnHealingItemUsed("Health Pickup");
+				}
+			}
 
 			result = hitData.Amount > 0f ? string.Empty : (_actionType == EHitAction.Shield ? "Shield full" : "Health full");
 

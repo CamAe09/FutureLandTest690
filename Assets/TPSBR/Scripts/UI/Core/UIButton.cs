@@ -34,13 +34,32 @@ namespace TPSBR.UI
 				_tempWidgetList.Clear();
 			}
 
-			if (_customClickSound.Clips.Length > 0)
+			if (_parent != null)
 			{
-				_parent.PlaySound(_customClickSound);
+				if (_customClickSound.Clips.Length > 0)
+				{
+					_parent.PlaySound(_customClickSound);
+				}
+				else
+				{
+					_parent.PlayClickSound();
+				}
 			}
 			else
 			{
-				_parent.PlayClickSound();
+				// Fallback: Try to find SceneUI if no UIWidget parent is found
+				var sceneUI = GetComponentInParent<SceneUI>();
+				if (sceneUI != null)
+				{
+					if (_customClickSound.Clips.Length > 0)
+					{
+						sceneUI.PlaySound(_customClickSound);
+					}
+					else
+					{
+						sceneUI.PlayClickSound();
+					}
+				}
 			}
 		}
 
@@ -57,7 +76,7 @@ namespace TPSBR.UI
 				var buttonAnimator = animator;
 				if (buttonAnimator != null)
 				{
-					buttonAnimator.keepAnimatorControllerStateOnDisable = true;
+					buttonAnimator.keepAnimatorStateOnDisable = true;
 				}
 			}
 		}

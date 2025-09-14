@@ -1,34 +1,28 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Runtime.InteropServices;
 
 	[StructLayout(LayoutKind.Explicit)]
 	public unsafe struct KCCNetworkID
 	{
+		// CONSTANTS
+
+		public const int WORD_COUNT = 2;
+
 		// PUBLIC MEMBERS
 
 		[FieldOffset(0)]
-		public int  A;
+		public uint Value0;
 		[FieldOffset(4)]
-		public int  B;
-		[FieldOffset(8)]
-		public int  C;
-		[FieldOffset(12)]
-		public int  D;
-		[FieldOffset(0)]
-		public uint Raw;
-		[FieldOffset(0)]
-		public long Value0;
-		[FieldOffset(8)]
-		public long Value1;
+		public uint Value1;
 
-		public bool IsValid => (A | B | C | D) != default;
+		public bool IsValid => Value1 != default;
 
 		// PUBLIC METHODS
 
-		public bool Equals(KCCNetworkID other) => A == other.A && B == other.B && C == other.C && D == other.D;
+		public bool Equals(KCCNetworkID other) => Value0 == other.Value0 && Value1 == other.Value1;
 
-		public static KCCNetworkID GetNetworkID(NetworkObject networkObject)
+		public static KCCNetworkID GetNetworkID(NetworkRunner runner, NetworkObject networkObject)
 		{
 			if (networkObject == null)
 				return default;
@@ -37,12 +31,28 @@ namespace Fusion.KCC
 
 			if (networkObject.Id.IsValid == true)
 			{
-				networkID.Raw = networkObject.Id.Raw;
+				networkID.Value0 = networkObject.Id.Raw;
+				networkID.Value1 = 1U;
 			}
 			else
 			{
-				networkID.Value0 = networkObject.NetworkGuid.RawGuidValue[0];
-				networkID.Value1 = networkObject.NetworkGuid.RawGuidValue[1];
+				NetworkObjectTypeId networkTypeId = networkObject.NetworkTypeId;
+				if (networkTypeId.IsValid == false)
+				{
+					if (networkObject.TryGetComponent(out NetworkObjectPrefabData bakeData) == true)
+					{
+						NetworkPrefabId networkPrefabId = runner.Prefabs.GetId(bakeData.Guid);
+						if (networkPrefabId.IsValid == true)
+						{
+							networkTypeId = networkPrefabId;
+							networkObject.NetworkTypeId = networkTypeId;
+						}
+					}
+				}
+
+				KCCNetworkID networkTypeIdAsKCCNetworkID = *((KCCNetworkID*)&networkTypeId);
+				networkID.Value0 = networkTypeIdAsKCCNetworkID.Value0;
+				networkID.Value1 = 2U | (networkTypeIdAsKCCNetworkID.Value1 << 2);
 			}
 
 			return networkID;
@@ -50,31 +60,25 @@ namespace Fusion.KCC
 
 		public static NetworkObject GetNetworkObject(NetworkRunner runner, KCCNetworkID networkID)
 		{
-			if (networkID.IsValid == false)
-				return default;
-
-			if (networkID.B == default && networkID.C == default && networkID.D == default)
+			uint type = networkID.Value1 & 3U;
+			if (type == 1U)
 			{
 				NetworkId networkId = new NetworkId();
-				networkId.Raw = networkID.Raw;
-				NetworkObject networkObjectInstance = runner.FindObject(networkId);
-				if (networkObjectInstance != null)
-					return networkObjectInstance;
+				networkId.Raw = networkID.Value0;
+				return runner.FindObject(networkId);
+			}
+			else if (type == 2U)
+			{
+				KCCNetworkID networkIDAsNetworkTypeId = new KCCNetworkID();
+				networkIDAsNetworkTypeId.Value0 = networkID.Value0;
+				networkIDAsNetworkTypeId.Value1 = networkID.Value1 >> 2;
+
+				NetworkObjectTypeId networkObjectTypeId = *((NetworkObjectTypeId*)&networkIDAsNetworkTypeId);
+				if (networkObjectTypeId.IsPrefab == true)
+					return runner.Config.PrefabTable.Load(networkObjectTypeId.AsPrefabId, true);
 			}
 
-			NetworkObjectGuid networkObjectGuid = new NetworkObjectGuid();
-			networkObjectGuid.RawGuidValue[0] = networkID.Value0;
-			networkObjectGuid.RawGuidValue[1] = networkID.Value1;
-
-			if (runner.Config.PrefabTable.TryGetId(networkObjectGuid, out NetworkPrefabId networkPrefabId) == true && runner.Config.PrefabTable.TryGetPrefab(networkPrefabId, out NetworkObject networkObject) == true)
-				return networkObject;
-
 			return default;
-		}
-
-		public override string ToString()
-		{
-			return $"{A} | {B} | {C} | {B}";
 		}
 	}
 }

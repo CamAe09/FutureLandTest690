@@ -76,17 +76,30 @@ namespace TPSBR
 				request.ExtraPeers = 0;
 			}
 
-			SceneRef sceneRef = SceneUtility.GetBuildIndexByScenePath(request.ScenePath);
+			SceneRef sceneRef = default;
+
+			int sceneIndex = SceneUtility.GetBuildIndexByScenePath(request.ScenePath);
+			if (sceneIndex >= 0)
+			{
+				sceneRef = SceneRef.FromIndex(sceneIndex);
+			}
 
 			int totalPeers = 1 + request.ExtraPeers;
 			session.GamePeers = new GamePeer[totalPeers];
+
+			NetworkSceneInfo sceneInfo = new NetworkSceneInfo();
+
+			if (sceneRef.IsValid == true)
+			{
+				sceneInfo.AddSceneRef(sceneRef, LoadSceneMode.Additive, LocalPhysicsMode.None, true);
+			}
 
 			for (int i = 0; i < totalPeers; i++)
 			{
 				session.GamePeers[i] = new GamePeer(i)
 				{
 					UserID   = i == 0 ? request.UserID : $"{request.UserID}.{i}",
-					Scene    = sceneRef,
+					Scene    = sceneInfo,
 					GameMode = i == 0 ? request.GameMode : GameMode.Client,
 					Request  = request,
 				};
@@ -258,16 +271,30 @@ namespace TPSBR
 				Log($"Show loading scene");
 				yield return ShowLoadingSceneCoroutine(true);
 
-				var currentScene = activeScene.GetComponent<Scene>();
-				if (currentScene != null)
+				bool unloadScene = true;
+
+				for (int i = 0; i < _currentSession.GamePeers.Length; ++i)
 				{
-					Log($"Deinitializing Scene");
-					currentScene.Deinitialize();
+					if (activeScene == _currentSession.GamePeers[i].LoadedScene)
+					{
+						unloadScene = false;
+						break;
+					}
 				}
 
-				Log($"Unloading scene {activeScene.name}");
-				yield return SceneManager.UnloadSceneAsync(activeScene);
-				yield return null;
+				if (unloadScene == true)
+				{
+					Scene currentScene = activeScene.GetComponent<Scene>();
+					if (currentScene != null)
+					{
+						Log($"Deinitializing Scene");
+						currentScene.Deinitialize();
+					}
+
+					Log($"Unloading scene {activeScene.name}");
+					yield return SceneManager.UnloadSceneAsync(activeScene);
+					yield return null;
+				}
 			}
 
 			float  baseTime  = Time.realtimeSinceStartup;
@@ -284,19 +311,21 @@ namespace TPSBR
 			NetworkRunner runner = Instantiate(Global.Settings.RunnerPrefab);
 			runner.name = peerName;
 
+			runner.EnableVisibilityExtension();
+
 			peer.Runner       = runner;
 			peer.SceneManager = runner.GetComponent<NetworkSceneManager>();
 			peer.LoadedScene  = default;
 
 			StartGameArgs startGameArgs = new StartGameArgs();
-			startGameArgs.GameMode            = peer.GameMode;
-			startGameArgs.SessionName         = peer.Request.SessionName;
-			startGameArgs.Scene               = peer.Scene;
-			startGameArgs.Initialized         = OnGamePeerInitialized;
-			startGameArgs.ObjectPool          = pool;
-			startGameArgs.CustomLobbyName     = peer.Request.CustomLobby;
-			startGameArgs.SceneManager        = peer.SceneManager;
-			startGameArgs.DisableClientSessionCreation = true;
+			startGameArgs.GameMode                    = peer.GameMode;
+			startGameArgs.SessionName                 = peer.Request.SessionName;
+			startGameArgs.Scene                       = peer.Scene;
+			startGameArgs.OnGameStarted               = OnGamePeerInitialized;
+			startGameArgs.ObjectProvider              = pool;
+			startGameArgs.CustomLobbyName             = peer.Request.CustomLobby;
+			startGameArgs.SceneManager                = peer.SceneManager;
+			startGameArgs.EnableClientSessionCreation = false;
 
 			if (peer.Request.MaxPlayers > 0)
 			{
@@ -420,7 +449,7 @@ namespace TPSBR
 				}
 			}
 
-			Debug.LogWarning($"{peerName} started on {runner.Simulation.GetLocalAddress()} in {(Time.realtimeSinceStartup - baseTime):0.00}s");
+			Debug.LogWarning($"{peerName} started in {(Time.realtimeSinceStartup - baseTime):0.00}s");
 
 			peer.LoadedScene = runner.SimulationUnityScene;
 
@@ -887,7 +916,7 @@ namespace TPSBR
 		private sealed class GamePeer
 		{
 			public int                         ID;
-			public SceneRef                    Scene;
+			public NetworkSceneInfo            Scene;
 			public SceneContext                Context;
 			public GameMode                    GameMode;
 			public NetworkRunner               Runner;

@@ -1,4 +1,4 @@
-namespace Fusion.KCC.Editor
+namespace Fusion.Addons.KCC.Editor
 {
 	using System.Collections.Generic;
 	using UnityEngine;
@@ -35,12 +35,12 @@ namespace Fusion.KCC.Editor
 				_layerNames = layerNames.ToArray();
 			}
 
-			int storedlayerIndex   = _layerIDs.IndexOf(property.intValue);
-			int selectedlayerIndex = EditorGUI.Popup(position, label, storedlayerIndex, _layerNames);
+			int storedLayerIndex   = _layerIDs.IndexOf(property.intValue);
+			int selectedLayerIndex = EditorGUI.Popup(position, label, storedLayerIndex, _layerNames);
 
-			if (selectedlayerIndex >= 0 && selectedlayerIndex != storedlayerIndex)
+			if (selectedLayerIndex >= 0 && selectedLayerIndex != storedLayerIndex)
 			{
-				property.intValue = _layerIDs[selectedlayerIndex];
+				property.intValue = _layerIDs[selectedLayerIndex];
 
 				EditorUtility.SetDirty(property.serializedObject.targetObject);
 			}

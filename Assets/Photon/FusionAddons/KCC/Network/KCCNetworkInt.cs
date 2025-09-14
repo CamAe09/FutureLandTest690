@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 	using UnityEngine;
@@ -32,19 +32,19 @@ namespace Fusion.KCC
 			*ptr = _get(Context);
 		}
 
-		public override void Interpolate(InterpolationData interpolationData)
+		public override void Interpolate(KCCInterpolationInfo interpolationInfo)
 		{
-			int fromValue = *interpolationData.From;
-			int toValue   = *interpolationData.To;
+			int fromValue = interpolationInfo.FromBuffer.ReinterpretState<int>(interpolationInfo.Offset);
+			int toValue   = interpolationInfo.ToBuffer.ReinterpretState<int>(interpolationInfo.Offset);
 			int value;
 
 			if (_interpolate != null)
 			{
-				value = _interpolate(Context, interpolationData.Alpha, fromValue, toValue);
+				value = _interpolate(Context, interpolationInfo.Alpha, fromValue, toValue);
 			}
 			else
 			{
-				value = (int)Mathf.Lerp(fromValue, toValue, interpolationData.Alpha);
+				value = (int)Mathf.Lerp(fromValue, toValue, interpolationInfo.Alpha);
 			}
 
 			_set(Context, value);

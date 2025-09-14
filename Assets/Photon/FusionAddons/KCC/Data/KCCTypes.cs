@@ -1,98 +1,61 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 
 	/// <summary>
-	/// Controls mode in which KCC operates. Use <c>Fusion</c> for fully networked characters, <c>Unity</c> can be used for non-networked local characters (NPCs, cinematics, ...).
+	/// Defines update behavior for KCC with input and state authority.
+    /// <list type="bullet">
+    /// <item><description>Predict Fixed | Interpolate Render - Full processing/prediction in fixed update, interpolation between last two predicted fixed update states in render update.</description></item>
+    /// <item><description>Predict Fixed | Predict Render - Full processing/prediction in fixed update, full processing/prediction in render update.</description></item>
+    /// </list>
 	/// </summary>
-	public enum EKCCDriver
+	public enum EKCCAuthorityBehavior
 	{
-		None   = 0,
-		Unity  = 1,
-		Fusion = 2,
+		PredictFixed_InterpolateRender = 0,
+		PredictFixed_PredictRender     = 1,
 	}
 
 	/// <summary>
-	/// Defines KCC render behavior for input/state authority.
+	/// Defines interpolation behavior. Objects predicted in fixed update are always fully interpolated.
     /// <list type="bullet">
-    /// <item><description>None - Skips render completely. Useful when render update is perfectly synchronized with fixed update or debugging.</description></item>
-    /// <item><description>Predict - Full processing and physics query.</description></item>
-    /// <item><description>Interpolate - Interpolation between last two fixed updates.</description></item>
+    /// <item><description>Full - Interpolates all networked properties in KCCSettings and KCCData, synchronizes Transform and Rigidbody components when interpolation is triggered.</description></item>
+    /// <item><description>Transform - Interpolates only position and rotation and synchronizes Transform component. This mode is fastest, but KCCSettings and KCCData properties won't be synchronized. Use with caution!</description></item>
     /// </list>
 	/// </summary>
-	public enum EKCCRenderBehavior
+	public enum EKCCInterpolationMode
 	{
-		None        = 0,
-		Predict     = 1,
-		Interpolate = 2,
+		Full      = 0,
+		Transform = 1,
 	}
 
 	/// <summary>
 	/// Defines KCC physics behavior.
     /// <list type="bullet">
-    /// <item><description>None - Skips almost all execution including processors, collider is despawned.</description></item>
-    /// <item><description>Capsule - Full processing with capsule collider spawned.</description></item>
-    /// <item><description>Void - Skips internal physics query, collider is despawned, processors are executed.</description></item>
+    /// <item><description>None - Skips internal physics query, collider is despawned.</description></item>
+    /// <item><description>Capsule - Full physics processing, Capsule collider spawned.</description></item>
     /// </list>
 	/// </summary>
 	public enum EKCCShape
 	{
 		None    = 0,
 		Capsule = 1,
-		Void    = 2,
-	}
-
-	public enum EKCCStage
-	{
-		None                  = 0,
-		SetInputProperties    = 1,
-		SetDynamicVelocity    = 2,
-		SetKinematicDirection = 3,
-		SetKinematicTangent   = 4,
-		SetKinematicSpeed     = 5,
-		SetKinematicVelocity  = 6,
-		ProcessPhysicsQuery   = 7,
-		OnStay                = 8,
-		OnInterpolate         = 9,
-		ProcessUserLogic      = 10,
-	}
-
-	[Flags]
-	public enum EKCCStages
-	{
-		None                  = 0,
-		SetInputProperties    = 1 << EKCCStage.SetInputProperties,
-		SetDynamicVelocity    = 1 << EKCCStage.SetDynamicVelocity,
-		SetKinematicDirection = 1 << EKCCStage.SetKinematicDirection,
-		SetKinematicTangent   = 1 << EKCCStage.SetKinematicTangent,
-		SetKinematicSpeed     = 1 << EKCCStage.SetKinematicSpeed,
-		SetKinematicVelocity  = 1 << EKCCStage.SetKinematicVelocity,
-		ProcessPhysicsQuery   = 1 << EKCCStage.ProcessPhysicsQuery,
-		OnStay                = 1 << EKCCStage.OnStay,
-		OnInterpolate         = 1 << EKCCStage.OnInterpolate,
-		ProcessUserLogic      = 1 << EKCCStage.ProcessUserLogic,
-		All                   = -1
 	}
 
 	public enum EKCCFeature
 	{
 		None                 = 0,
-		StepUp               = 1,
-		SnapToGround         = 2,
+		CCD                  = 1,
+		AntiJitter           = 2,
 		PredictionCorrection = 3,
-		AntiJitter           = 4,
-		CCD                  = 5,
 	}
 
 	[Flags]
 	public enum EKCCFeatures
 	{
 		None                 = 0,
-		StepUp               = 1 << EKCCFeature.StepUp,
-		SnapToGround         = 1 << EKCCFeature.SnapToGround,
-		PredictionCorrection = 1 << EKCCFeature.PredictionCorrection,
-		AntiJitter           = 1 << EKCCFeature.AntiJitter,
 		CCD                  = 1 << EKCCFeature.CCD,
+		AntiJitter           = 1 << EKCCFeature.AntiJitter,
+		PredictionCorrection = 1 << EKCCFeature.PredictionCorrection,
 		All                  = -1
 	}
 
@@ -127,5 +90,53 @@ namespace Fusion.KCC
 		Hang    = 1 << 3,
 		Top     = 1 << 4,
 		Trigger = 1 << 5,
+	}
+
+	/// <summary>
+	/// Controls execution of overlap queries when updating collision hits.
+    /// <list type="bullet">
+    /// <item><description>Default - Hits from base overlap query will be reused only if all colliders are within extent, otherwise new overlap query will be executed.</description></item>
+    /// <item><description>Reuse - Force reuse hits from base overlap query, even if colliders are not within extent.</description></item>
+    /// <item><description>New - Force execute new overlap query.</description></item>
+    /// </list>
+	/// </summary>
+	public enum EKCCHitsOverlapQuery
+	{
+		Default = 0,
+		Reuse   = 1,
+		New     = 2,
+	}
+
+	public enum EKCCLogType
+	{
+		Info    = 0,
+		Warning = 1,
+		Error   = 2,
+	}
+
+	/// <summary>
+	/// Used for interpolation of networked data.
+	/// </summary>
+	public ref struct KCCInterpolationInfo
+	{
+	    public NetworkBehaviourBuffer FromBuffer;
+	    public NetworkBehaviourBuffer ToBuffer;
+	    public int                    Offset;
+	    public float                  Alpha;
+	}
+
+	public static partial class KCCTypes
+	{
+		public static readonly Type IBeginMove     = typeof(IBeginMove);
+		public static readonly Type BeginMove      = typeof(BeginMove);
+
+		public static readonly Type IPrepareData   = typeof(IPrepareData);
+		public static readonly Type PrepareData    = typeof(PrepareData);
+
+		public static readonly Type IAfterMoveStep = typeof(IAfterMoveStep);
+		public static readonly Type AfterMoveStep  = typeof(AfterMoveStep);
+
+		public static readonly Type IEndMove       = typeof(IEndMove);
+		public static readonly Type EndMove        = typeof(EndMove);
 	}
 }

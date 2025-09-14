@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System;
 	using UnityEngine;
@@ -62,10 +62,9 @@ namespace Fusion.KCC
 			}
 		}
 
-		public override void Interpolate(InterpolationData interpolationData)
+		public override void Interpolate(KCCInterpolationInfo interpolationInfo)
 		{
-			int* fromPtr = interpolationData.From;
-			int* toPtr   = interpolationData.To;
+			int offset = interpolationInfo.Offset;
 
 			Vector2 fromValue;
 			Vector2 toValue;
@@ -73,28 +72,28 @@ namespace Fusion.KCC
 
 			if (_readAccuracy <= 0.0f)
 			{
-				fromValue.x = *(float*)(fromPtr + 0);
-				fromValue.y = *(float*)(fromPtr + 1);
+				fromValue.x = interpolationInfo.FromBuffer.ReinterpretState<float>(offset + 0);
+				fromValue.y = interpolationInfo.FromBuffer.ReinterpretState<float>(offset + 1);
 
-				toValue.x = *(float*)(toPtr + 0);
-				toValue.y = *(float*)(toPtr + 1);
+				toValue.x = interpolationInfo.ToBuffer.ReinterpretState<float>(offset + 0);
+				toValue.y = interpolationInfo.ToBuffer.ReinterpretState<float>(offset + 1);
 			}
 			else
 			{
-				fromValue.x = (*(fromPtr + 0)) * _readAccuracy;
-				fromValue.y = (*(fromPtr + 1)) * _readAccuracy;
+				fromValue.x = interpolationInfo.FromBuffer.ReinterpretState<int>(offset + 0) * _readAccuracy;
+				fromValue.y = interpolationInfo.FromBuffer.ReinterpretState<int>(offset + 1) * _readAccuracy;
 
-				toValue.x = (*(toPtr + 0)) * _readAccuracy;
-				toValue.y = (*(toPtr + 1)) * _readAccuracy;
+				toValue.x = interpolationInfo.ToBuffer.ReinterpretState<int>(offset + 0) * _readAccuracy;
+				toValue.y = interpolationInfo.ToBuffer.ReinterpretState<int>(offset + 1) * _readAccuracy;
 			}
 
 			if (_interpolate != null)
 			{
-				value = _interpolate(Context, interpolationData.Alpha, fromValue, toValue);
+				value = _interpolate(Context, interpolationInfo.Alpha, fromValue, toValue);
 			}
 			else
 			{
-				value = Vector2.Lerp(fromValue, toValue, interpolationData.Alpha);
+				value = Vector2.Lerp(fromValue, toValue, interpolationInfo.Alpha);
 			}
 
 			_set(Context, value);

@@ -1,0 +1,12 @@
+This file was renamed from ShopUISetup.cs to fix build compilation errors.
+
+The original ShopUISetup.cs contained Unity Editor-specific code that was causing build failures.
+A new build-compatible version has been created: ShopUISetup_NEW.cs
+
+If you need the original functionality, use ShopUISetup_NEW.cs instead.
+
+Build errors were:
+- PrefabUtility not available in builds
+- AssetDatabase not available in builds
+
+These have been fixed in the NEW version by using proper conditional compilation.

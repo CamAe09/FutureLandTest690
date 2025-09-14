@@ -4,18 +4,11 @@ namespace Fusion.Plugin
 
 	public static class FusionExtensions
 	{
-		public static NetworkAreaOfInterestBehaviour GetAOIPositionSource(this NetworkObject networkObject)
-		{
-			return networkObject.AoiPositionSource;
-		}
+		private static readonly FieldInfo _simulationFieldInfo = typeof(NetworkRunner).GetField("_simulation", BindingFlags.Instance | BindingFlags.NonPublic);
 
-		public static double GetRTT(this Simulation simulation)
+		public static void SetLocalPlayer(this NetworkRunner runner, PlayerRef playerRef)
 		{
-			return simulation is Simulation.Client client ? client.RttToServer : 0.0;
-		}
-
-		public static void SetLocalPlayer(this Simulation simulation, PlayerRef playerRef)
-		{
+			Simulation simulation = (Simulation)_simulationFieldInfo.GetValue(runner);
 			if (simulation is Simulation.Client client)
 			{
 				// Hack - Local player is reset back after disconnect, otherwise exceptions are thrown all over the code because Object.HasStateAuthority == true on proxies
@@ -24,23 +17,22 @@ namespace Fusion.Plugin
 			}
 		}
 
-		public static string GetLocalAddress(this Simulation simulation)
+		public static void GetInterpolationData(this NetworkRunner runner, out int fromTick, out int toTick, out float alpha)
 		{
-			return simulation.LocalAddress.NativeAddress.ToString();
-		}
+			Simulation simulation = (Simulation)_simulationFieldInfo.GetValue(runner);
 
-		public static string GetOrderSorterNodes()
-		{
-			string str     = "";
-			var    sorter  = new OrderSorter();
-			var    results = sorter.Run();
-
-			foreach (var result in results)
+			if (runner.IsServer == true)
 			{
-				str += $"{result.Type.Name}\n";
+				fromTick = simulation.TickPrevious;
+				toTick   = simulation.Tick;
+				alpha    = simulation.LocalAlpha;
 			}
-
-			return str;
+			else
+			{
+				fromTick = simulation.RemoteTickPrevious;
+				toTick   = simulation.RemoteTick;
+				alpha    = simulation.RemoteAlpha;
+			}
 		}
 	}
 }

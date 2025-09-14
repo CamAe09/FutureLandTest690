@@ -34,9 +34,9 @@ namespace TPSBR.UI
 
 		// PUBLIC MEMBERS
 
-		public void UpdateInteractions(SceneContext context, Weapons weapons)
+		public void UpdateInteractions(SceneContext context, Agent agent)
 		{
-			var interactionTarget = weapons.InteractionTarget;
+			var interactionTarget = agent.Interactions.InteractionTarget;
 			bool force = false;
 
 			// Interaction target could get destroyed in the meantime (+ special check due to interface required)
@@ -50,14 +50,14 @@ namespace TPSBR.UI
 
 			UpdateInfoPosition(context);
 
-			if (weapons.DropWeaponTimer.IsRunning == false)
+			if (agent.Interactions.DropItemTimer.IsRunning == false)
 			{
 				_dropWeaponGroup.SetActive(false);
 			}
 			else
 			{
 				_dropWeaponGroup.SetActive(true);
-				_dropWeaponProgress.fillAmount = 1f - (weapons.DropWeaponTimer.RemainingTime(weapons.Runner).Value / weapons.WeaponDropTime);
+				_dropWeaponProgress.fillAmount = 1f - (agent.Interactions.DropItemTimer.RemainingTime(agent.Runner).Value / agent.Interactions.ItemDropTime);
 			}
 		}
 

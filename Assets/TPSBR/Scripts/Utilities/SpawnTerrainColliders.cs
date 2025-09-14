@@ -1,6 +1,7 @@
-namespace Fusion.KCC
+namespace TPSBR
 {
 	using UnityEngine;
+	using Fusion.Addons.KCC;
 
 	[RequireComponent(typeof(TerrainCollider))]
 	public sealed class SpawnTerrainColliders : MonoBehaviour

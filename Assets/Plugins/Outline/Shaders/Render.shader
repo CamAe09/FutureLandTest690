@@ -1,31 +1,7 @@
 ﻿Shader "Hidden/Outline/Render"
 {
-	HLSLINCLUDE
-
-		#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-		#include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Common.hlsl"
-
-		TEXTURE2D(_MainTex);
-		SAMPLER(sampler_MainTex);
-
-		half4 FragmentSimple(Varyings input) : SV_Target
-		{
-			return 1;
-		}
-
-		half4 FragmentAlphaTest(Varyings input) : SV_Target
-		{
-			half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-			clip(c.a);
-			return 1;
-		}
-
-	ENDHLSL
-
 	SubShader
 	{
-		Tags { "RenderPipeline" = "UniversalPipeline" }
-
 		Cull Off
 		ZWrite Off
 		ZTest LEqual
@@ -33,26 +9,43 @@
 
 		Pass
 		{
-			Name "Opaque"
-
 			HLSLPROGRAM
 
-			#pragma multi_compile_instancing
-			#pragma vertex Vert
-			#pragma fragment FragmentSimple
+			#pragma target 3.0
 
-			ENDHLSL
-		}
+			#pragma vertex   Vertex
+			#pragma fragment Fragment
 
-		Pass
-		{
-			Name "Transparent"
+			#include "UnityCG.cginc"
 
-			HLSLPROGRAM
+			sampler2D _MainTex;
 
-			#pragma multi_compile_instancing
-			#pragma vertex Vert
-			#pragma fragment FragmentAlphaTest
+			struct VertexInput
+			{
+				float4 vertex : POSITION;
+				float2 uv     : TEXCOORD0;
+			};
+
+			struct VertexOutput
+			{
+				float4 vertex : SV_POSITION;
+				float2 uv     : TEXCOORD0;
+			};
+
+			VertexOutput Vertex(VertexInput input)
+			{
+				VertexOutput output;
+				output.vertex = mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, input.vertex));
+				output.uv     = input.uv;
+				return output;
+			}
+
+			float4 Fragment(VertexOutput vertexOutput) : SV_TARGET
+			{
+				float4 color = tex2D(_MainTex, vertexOutput.uv);
+				clip(color.a);
+				return 1;
+			}
 
 			ENDHLSL
 		}

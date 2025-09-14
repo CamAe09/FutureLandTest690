@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace TPSBR
 {
@@ -8,16 +10,26 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (Context == null || Context.NetworkGame.Object == null)
 				return;
 
-			float yPosition = transform.position.y;
+			Profiler.BeginSample(nameof(KillFloor));
 
-			foreach (var player in Context.NetworkGame.Players)
+			float yPosition = transform.position.y;
+			int   splitPlayers = 1;
+
+			List<Player> activePlayers = Context.NetworkGame.ActivePlayers;
+			if (activePlayers.Count > 100)
 			{
+				splitPlayers = 5;
+			}
+
+			for (int i = Runner.Tick % splitPlayers; i < activePlayers.Count; i += splitPlayers)
+			{
+				Player player = activePlayers[i];
 				if (player == null)
 					continue;
 
@@ -44,6 +56,8 @@ namespace TPSBR
 
 				HitUtility.ProcessHit(ref hitData);
 			}
+
+			Profiler.EndSample();
 		}
 	}
 }

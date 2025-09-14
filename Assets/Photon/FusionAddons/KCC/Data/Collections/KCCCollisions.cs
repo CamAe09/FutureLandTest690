@@ -1,4 +1,4 @@
-namespace Fusion.KCC
+namespace Fusion.Addons.KCC
 {
 	using System.Collections.Generic;
 	using UnityEngine;
@@ -15,19 +15,19 @@ namespace Fusion.KCC
 
 		// KCCInteraction<TInteraction> INTERFACE
 
-		protected override void OnInitialize()
+		public override void Initialize()
 		{
 			Collider  = NetworkObject.GetComponentNoAlloc<Collider>();
 			Processor = Provider is IKCCProcessorProvider processorProvider ? processorProvider.GetProcessor() : null;
 		}
 
-		protected override void OnDeinitialize()
+		public override void Deinitialize()
 		{
 			Collider  = null;
 			Processor = null;
 		}
 
-		protected override void OnCopyFromOther(KCCCollision other)
+		public override void CopyFromOther(KCCCollision other)
 		{
 			Collider  = other.Collider;
 			Processor = other.Processor;
@@ -95,11 +95,12 @@ namespace Fusion.KCC
 			}
 		}
 
-		public KCCCollision Add(NetworkObject networkObject, IKCCInteractionProvider provider, Collider collider)
+		public KCCCollision Add(NetworkRunner networkRunner, NetworkObject networkObject, IKCCInteractionProvider provider, Collider collider)
 		{
-			KCCCollision collision = AddInternal(networkObject, provider, false);
+			KCCCollision collision = GetFromPool();
 			collision.Collider  = collider;
 			collision.Processor = provider is IKCCProcessorProvider processorProvider ? processorProvider.GetProcessor() : null;
+			AddInternal(collision, networkRunner, networkObject, provider, false);
 
 			return collision;
 		}

@@ -19,7 +19,7 @@ namespace TPSBR.Editor
 			{
 				EditorPrefs.SetBool(key, true);
 
-				bool result = EditorUtility.DisplayDialog("Action required!", "Running Linux server build on Multiplay platform requires HTTP requests to be enabled in Player Settings.", "The build will be hosted on Multiplay, enable HTTP requests.", "Ignore");
+				bool result = EditorUtility.DisplayDialog("Action required!", "Running Linux server build on Game Server Hosting platform requires HTTP requests to be enabled in Player Settings.", "The build will be hosted on Game Server Hosting, enable HTTP requests.", "Ignore");
 				if (result == true)
 				{
 					PlayerSettings.insecureHttpOption = InsecureHttpOption.AlwaysAllowed;

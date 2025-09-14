@@ -1,11 +1,11 @@
 using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
-using Fusion.KCC;
+using Fusion.Addons.KCC;
 
 namespace TPSBR
 {
-	public class BattleRoyaleGameplayMode : GameplayMode
+	public sealed class BattleRoyaleGameplayMode : GameplayMode
 	{
 		// PUBLIC MEMBERS
 
@@ -44,7 +44,7 @@ namespace TPSBR
 		[Networked]
 		private Airplane _airplane { get; set; }
 
-		private Dictionary<PlayerRef, AirplaneAgent> _airplaneAgents = new Dictionary<PlayerRef, AirplaneAgent>(MAX_PLAYERS);
+		private Dictionary<PlayerRef, AirplaneAgent> _airplaneAgents = new Dictionary<PlayerRef, AirplaneAgent>(byte.MaxValue);
 
 		private BattleRoyaleComparer _playerComparer = new BattleRoyaleComparer();
 
@@ -52,7 +52,7 @@ namespace TPSBR
 
 		public void StartImmediately()
 		{
-			if (Object.HasStateAuthority == true)
+			if (HasStateAuthority == true)
 			{
 				StartAirdrop();
 			}
@@ -64,7 +64,7 @@ namespace TPSBR
 
 		public bool RequestAirplaneJump(PlayerRef playerRef, Vector3 direction)
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return false;
 
 			if (HasStarted == false)
@@ -87,7 +87,7 @@ namespace TPSBR
 
 		public void TryAddWaitTime(float time)
 		{
-			if (Object.HasStateAuthority == true)
+			if (HasStateAuthority == true)
 			{
 				AddWaitTime(time);
 			}
@@ -116,7 +116,7 @@ namespace TPSBR
 			if (State != EState.Active)
 				return;
 
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (HasStarted == false && _waitingForPlayersCooldown.ExpiredOrNotRunning(Runner) == true)
@@ -162,7 +162,7 @@ namespace TPSBR
 			var alivePlayers    = 0;
 			var lastAlivePlayer = PlayerRef.None;
 
-			foreach (var player in Context.NetworkGame.Players)
+			foreach (var player in Context.NetworkGame.ActivePlayers)
 			{
 				if (player == null)
 					continue;
@@ -243,6 +243,12 @@ namespace TPSBR
 		private void StartAirdrop()
 		{
 			HasStarted = true;
+			
+			// Quest tracking for match start
+			if (TPSBR.BattleRoyaleQuestTracker.Instance != null)
+			{
+				TPSBR.BattleRoyaleQuestTracker.Instance.StartMatch();
+			}
 
 			_airplane.ActivateDropWindow();
 			_dropCooldown = TickTimer.CreateFromSeconds(Runner, _playerDropTime);

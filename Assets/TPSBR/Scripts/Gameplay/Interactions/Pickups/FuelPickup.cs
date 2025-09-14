@@ -11,9 +11,15 @@ namespace TPSBR
 
 		// StaticPickup INTERFACE
 
-		protected override bool Consume(Agent agent, out string result)
+		protected override bool Consume(GameObject instigator, out string result)
 		{
-			bool fuelAdded = agent.Jetpack.AddFuel(_fuel);
+			if (instigator.TryGetComponent(out Jetpack jetpack) == false)
+			{
+				result = "Not applicable";
+				return false;
+			}
+
+			bool fuelAdded = jetpack.AddFuel(_fuel);
 			result = fuelAdded == true ? string.Empty : "Cannot add more fuel";
 
 			return fuelAdded;

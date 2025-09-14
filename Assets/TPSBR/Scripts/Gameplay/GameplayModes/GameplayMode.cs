@@ -40,8 +40,6 @@ namespace TPSBR
 			Finished,
 		}
 
-		public const byte MAX_PLAYERS = 200;
-
 		public string GameplayName;
 
 		public int    MaxPlayers;
@@ -57,7 +55,7 @@ namespace TPSBR
 		// PUBLIC MEMBERS
 
 		public EGameplayType         Type          => _type;
-		public float                 Time          => (Runner.Simulation.Tick - _startTick) * Runner.DeltaTime;
+		public float                 Time          => (Runner.Tick - _startTick) * Runner.DeltaTime;
 		public float                 RemainingTime => _endTimer.IsRunning == true ? _endTimer.RemainingTime(Runner).Value : 0f;
 
 		[Networked, HideInInspector]
@@ -105,17 +103,17 @@ namespace TPSBR
 			if (State != EState.None)
 				return;
 
-			_startTick = Runner.Simulation.Tick;
+			_startTick = Runner.Tick;
 
 			if (TimeLimit > 0f)
 			{
 				_endTimer = TickTimer.CreateFromSeconds(Runner, TimeLimit);
 			}
 
-			if (_useShrinkingArea == true && Object.HasStateAuthority == true)
+			if (_useShrinkingArea == true && HasStateAuthority == true)
 			{
 				_shrinkingArea = Runner.SimulationUnityScene.GetComponent<ShrinkingArea>();
-				if (_shrinkingArea != null && Object.HasStateAuthority == true)
+				if (_shrinkingArea != null && HasStateAuthority == true)
 				{
 					_shrinkingArea.Activate();
 
@@ -133,7 +131,7 @@ namespace TPSBR
 				}
 			}
 
-			if (_shrinkingArea != null && Object.HasStateAuthority == true)
+			if (_shrinkingArea != null && HasStateAuthority == true)
 			{
 				OnShrinkingAreaAnnounced(_shrinkingArea.Center, _shrinkingArea.Radius);
 			}
@@ -176,7 +174,7 @@ namespace TPSBR
 			victimStatistics.KillsWithoutDeath = 0;
 
 			var killerRef         = hitData.InstigatorRef;
-			var killerPlayer      = killerRef.IsValid == true ? Context.NetworkGame.GetPlayer(killerRef) : default;
+			var killerPlayer      = killerRef.IsRealPlayer == true ? Context.NetworkGame.GetPlayer(killerRef) : default;
 			var killerStatistics  = killerPlayer != null ? killerPlayer.Statistics : default;
 
 			if (killerRef == victimRef)
@@ -247,7 +245,7 @@ namespace TPSBR
 					Transform spawnPoint = _availableSpawnPoints.GetRandom().transform;
 					bool      isValid    = true;
 
-					foreach (var player in Context.NetworkGame.Players)
+					foreach (var player in Context.NetworkGame.ActivePlayers)
 					{
 						if (player == null)
 							continue;
@@ -277,18 +275,23 @@ namespace TPSBR
 		{
 			var observedPlayerRef = Context.ObservedPlayerRef;
 
-			while (true)
+			int playerIndex    = 0;
+			int maxPlayerIndex = 1000;
+
+			while (playerIndex < maxPlayerIndex)
 			{
-				if (observedPlayerRef > MAX_PLAYERS)
+				++playerIndex;
+
+				if (observedPlayerRef.AsIndex > maxPlayerIndex)
 				{
 					observedPlayerRef = PlayerRef.None;
 				}
-				else if (observedPlayerRef < PlayerRef.None)
+				else if (observedPlayerRef.AsIndex < PlayerRef.None.AsIndex)
 				{
-					observedPlayerRef = MAX_PLAYERS;
+					observedPlayerRef = PlayerRef.FromIndex(maxPlayerIndex);
 				}
 
-				observedPlayerRef += next == true ? 1 : -1;
+				observedPlayerRef = PlayerRef.FromIndex(observedPlayerRef.AsIndex + (next == true ? 1 : -1));
 
 				Player observedPlayer = Context.NetworkGame.GetPlayer(observedPlayerRef);
 				if (observedPlayer == null)
@@ -307,9 +310,6 @@ namespace TPSBR
 		public void PlayerJoined(Player player)
 		{
 			var statistics = player.Statistics;
-
-			statistics.PlayerRef = player.Object.InputAuthority;
-
 			PreparePlayerStatistics(ref statistics);
 			player.UpdateStatistics(statistics);
 
@@ -338,14 +338,20 @@ namespace TPSBR
 
 			Context.Backfill.PlayerLeft(player);
 
-			RPC_PlayerLeftGame(player.Object.InputAuthority, player.Nickname);
+			string nickname = player.Nickname;
+			if (nickname.HasValue() == false)
+			{
+				nickname = "Unknown";
+			}
+
+			RPC_PlayerLeftGame(player.Object.InputAuthority, nickname);
 
 			CheckWinCondition();
 		}
 
 		public void StopGame()
 		{
-			if (Object == null || Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 			{
 				Global.Networking.StopGame();
 				return;
@@ -371,7 +377,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			switch (State)
@@ -420,12 +426,12 @@ namespace TPSBR
 		protected Agent SpawnAgent(PlayerRef playerRef, Vector3 position, Quaternion rotation)
 		{
 			var player = Context.NetworkGame.GetPlayer(playerRef);
-			if (player.AgentPrefabID.IsValid == false)
+			if (player.AgentPrefab.IsValid == false)
 			{
-				throw new InvalidOperationException(nameof(player.AgentPrefabID));
+				throw new InvalidOperationException(nameof(player.AgentPrefab));
 			}
 
-			var agentObject = Runner.Spawn(player.AgentPrefabID, position, rotation, playerRef);
+			var agentObject = Runner.Spawn(player.AgentPrefab, position, rotation, playerRef);
 			var agent       = agentObject.GetComponent<Agent>();
 
 			Runner.SetPlayerAlwaysInterested(playerRef, agentObject, true);
@@ -462,7 +468,7 @@ namespace TPSBR
 			var bestPlayer = PlayerRef.None;
 			int bestPosition = int.MaxValue;
 
-			foreach (var player in Context.NetworkGame.Players)
+			foreach (var player in Context.NetworkGame.ActivePlayers)
 			{
 				if (player == null)
 					continue;
@@ -526,9 +532,9 @@ namespace TPSBR
 
 		private void RecalculatePositions()
 		{
-			var allStatistics = ListPool.Get<PlayerStatistics>(MAX_PLAYERS);
+			var allStatistics = ListPool.Get<PlayerStatistics>(byte.MaxValue);
 
-			foreach (var player in Context.NetworkGame.Players)
+			foreach (var player in Context.NetworkGame.ActivePlayers)
 			{
 				if (player == null)
 					continue;

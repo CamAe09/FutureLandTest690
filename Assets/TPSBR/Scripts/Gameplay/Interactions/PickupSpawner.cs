@@ -3,7 +3,7 @@ using Fusion;
 
 namespace TPSBR
 {
-	public class PickupSpawner : NetworkBehaviour
+	public sealed class PickupSpawner : NetworkBehaviour
 	{
 		[SerializeField]
 		private Transform _spawnPoint;
@@ -21,7 +21,7 @@ namespace TPSBR
 
 		public override void FixedUpdateNetwork()
 		{
-			if (Object.HasStateAuthority == false)
+			if (HasStateAuthority == false)
 				return;
 
 			if (_activePickup != null)
